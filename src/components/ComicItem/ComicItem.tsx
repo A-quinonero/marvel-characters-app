@@ -7,7 +7,7 @@ import { formatOnSaleDate } from "@/lib/utils/formatters";
 
 const mobileBreakpoint = "768px";
 
-const Item = styled.li`
+export const Item = styled.li`
   border: 1px solid #eee;
   border-radius: 12px;
   overflow: hidden;

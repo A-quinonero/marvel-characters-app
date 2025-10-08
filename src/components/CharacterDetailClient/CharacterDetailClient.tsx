@@ -1,5 +1,6 @@
 "use client";
 
+import React, { Suspense } from "react"; // Importa Suspense y React
 import styled, { keyframes } from "styled-components";
 import { useCharacterDetail } from "@/hooks/useCharacterDetail";
 import type { Character } from "@/types/characters";
@@ -7,29 +8,24 @@ import type { Comic } from "@/types/comic";
 import ComicsList from "@/components/ComicsList/ComicsList";
 import HeartIcon from "@/assets/icons/HeartIcon";
 import EmptyHeartIconDetailCharacter from "@/assets/icons/EmptyHeartIconDetailCharacter";
+import ComicsListSkeleton from "../ComicsList/ComicsListSkeleton";
 
-// La animación ahora empieza desde arriba
+// ... (keyframes y styled-components de Main, CharacterResume, etc. no cambian)
 const fadeInFromAbove = keyframes`
   from {
     opacity: 0;
-    transform: translateY(-20px); /* Cambiado a valor negativo */
+    transform: translateY(-20px);
   }
   to {
     opacity: 1;
     transform: translateY(0);
   }
 `;
-
 const breakpoint = "960px";
 const mobileBreakpoint = "768px";
-
 const Main = styled.main`
-  /* Aplicamos la animación corregida */
   animation: ${fadeInFromAbove} 0.6s ease-out forwards;
 `;
-
-// ... (El resto del código es idéntico y no necesita cambios)
-
 const CharacterResume = styled.div`
   display: flex;
   justify-content: center;
@@ -38,30 +34,25 @@ const CharacterResume = styled.div`
   background: #000000;
   clip-path: polygon(0% 0%, 100% 0%, 100% calc(100% - 24px), calc(100% - 24px) 100%, 0% 100%);
 `;
-
 const CharacterContent = styled.div`
   display: flex;
   flex-direction: row;
   width: 100%;
   max-width: ${breakpoint};
-
   @media (max-width: ${breakpoint}) {
     flex-direction: column;
   }
 `;
-
 const CharacterPhoto = styled.img`
   width: 320px;
   height: 320px;
   object-fit: cover;
-
   @media (max-width: ${breakpoint}) {
     width: 100%;
     height: auto;
     max-height: 400px;
   }
 `;
-
 const CharacterInfo = styled.div`
   display: flex;
   flex-direction: column;
@@ -70,12 +61,10 @@ const CharacterInfo = styled.div`
   gap: 24px;
   background: #000000;
   flex-grow: 1;
-
   @media (max-width: ${breakpoint}) {
     padding: 24px;
   }
 `;
-
 const CharacterTitleContainer = styled.div`
   display: flex;
   flex-direction: row;
@@ -84,22 +73,18 @@ const CharacterTitleContainer = styled.div`
   gap: 24px;
   width: 100%;
 `;
-
 const CharacterTitle = styled.h1`
   margin: 0;
   font-family: "Roboto Condensed";
-  font-style: normal;
   font-weight: 700;
   font-size: 40px;
   line-height: 1.1;
   text-transform: uppercase;
   color: #ffffff;
-
   @media (max-width: ${breakpoint}) {
     font-size: 32px;
   }
 `;
-
 const CharacterDescription = styled.p`
   font-family: "Roboto Condensed";
   font-style: normal;
@@ -109,19 +94,16 @@ const CharacterDescription = styled.p`
   color: #ffffff;
   margin: 0;
 `;
-
 const ComicsResume = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 48px;
   width: 100%;
-
   @media (max-width: ${mobileBreakpoint}) {
     padding: 32px 16px;
   }
 `;
-
 const ComicsContent = styled.div`
   display: flex;
   flex-direction: column;
@@ -130,7 +112,6 @@ const ComicsContent = styled.div`
   gap: 24px;
   position: relative;
 `;
-
 const ComicsTitle = styled.h2`
   font-weight: 700;
   font-size: 32px;
@@ -138,25 +119,31 @@ const ComicsTitle = styled.h2`
   text-transform: uppercase;
   color: #000000;
   margin: 0;
-
   @media (max-width: ${mobileBreakpoint}) {
     font-size: 24px;
     padding: 0 16px;
   }
 `;
-
 const Span = styled.span`
-    cursor: pointer;
-`
+  cursor: pointer;
+`;
 
+// Nuevo componente para "desenvolver" la promesa de los cómics
+function Comics({ promise }: { promise: Promise<Comic[]> }) {
+  // `React.use` espera a que la promesa se resuelva
+  const comics = React.use(promise);
+  const { sortedComics } = useCharacterDetail(null, comics);
+
+  return <ComicsList comics={sortedComics} />;
+}
 
 type Props = {
   character: Character;
-  comics: Comic[];
+  comicsPromise: Promise<Comic[]>; // Ahora recibe una promesa
 };
 
-export default function CharacterDetailClient({ character, comics }: Props) {
-  const { favorite, toggleFavorite, sortedComics } = useCharacterDetail(character, comics);
+export default function CharacterDetailClient({ character, comicsPromise }: Props) {
+  const { favorite, toggleFavorite } = useCharacterDetail(character);
 
   return (
     <Main>
@@ -173,7 +160,7 @@ export default function CharacterDetailClient({ character, comics }: Props) {
             <CharacterDescription>
               {character.description
                 ? character.description
-                : "Not description for this character..."}
+                : "No description for this character..."}
             </CharacterDescription>
           </CharacterInfo>
         </CharacterContent>
@@ -182,7 +169,9 @@ export default function CharacterDetailClient({ character, comics }: Props) {
       <ComicsResume>
         <ComicsContent>
           <ComicsTitle>COMICS</ComicsTitle>
-          <ComicsList comics={sortedComics} />
+          <Suspense fallback={<ComicsListSkeleton />}>
+            <Comics promise={comicsPromise} />
+          </Suspense>
         </ComicsContent>
       </ComicsResume>
     </Main>

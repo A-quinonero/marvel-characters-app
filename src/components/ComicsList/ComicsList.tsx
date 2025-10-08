@@ -4,7 +4,7 @@ import styled from "styled-components";
 import type { Comic } from "@/types/comic";
 import ComicItem from "@/components/ComicItem/ComicItem";
 
-const Grid = styled.ul`
+export const Grid = styled.ul`
   list-style: none;
   padding: 0;
   margin: 0;

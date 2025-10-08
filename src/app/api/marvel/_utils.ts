@@ -66,7 +66,7 @@ type SearchParams = Record<string, string | number | boolean | undefined>;
 export async function marvelFetch<T>(
   path: string,
   search?: SearchParams,
-  revalidateSeconds = 60
+  revalidateSeconds = 3600
 ): Promise<MarvelEnvelope<T>["data"]> {
   const userQS = new URLSearchParams(
     Object.entries(search ?? {}).reduce<Record<string, string>>((acc, [k, v]) => {

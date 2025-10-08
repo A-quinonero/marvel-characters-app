@@ -1,31 +1,29 @@
 import { notFound } from "next/navigation";
-import { mapCharacter, mapComic, marvelFetch } from "@/app/api/marvel/_utils";
-import type { MarvelCharacterDTO, MarvelComicDTO } from "@/types/api";
-import type { Character } from "@/types/characters";
-import type { Comic } from "@/types/comic";
+import { fetchCharacterById, fetchComicsByCharacter } from "@/lib/api/marvel";
 import CharacterDetailClient from "@/components/CharacterDetailClient/CharacterDetailClient";
 
-// 👇 params es una PROMESA
-type PageProps = { params: Promise<{ id: string }> };
+type PageProps = {
+  params: { id: string };
+};
 
 export default async function CharacterDetailPage({ params }: PageProps) {
-  // 👇 hay que await
-  const { id: idStr } = await params;
-  const id = Number(idStr);
-  if (Number.isNaN(id)) notFound();
+  const id = Number(params.id);
+  if (Number.isNaN(id)) {
+    notFound();
+  }
 
-  // Personaje
-  const charData = await marvelFetch<MarvelCharacterDTO>(`/characters/${id}`);
-  const dto = charData.results[0];
-  if (!dto) notFound();
-  const character: Character = mapCharacter(dto);
+  // 1. Lanzamos ambas peticiones en PARALELO, sin 'await'
+  const characterPromise = fetchCharacterById(id);
+  const comicsPromise = fetchComicsByCharacter(id);
 
-  // Cómics (primeros 20, ordenados por fecha)
-  const comicsData = await marvelFetch<MarvelComicDTO>(`/characters/${id}/comics`, {
-    limit: 20,
-    orderBy: "onsaleDate",
-  });
-  const comics: Comic[] = comicsData.results.map(mapComic);
+  // 2. Esperamos solo por los datos del personaje para la carga inicial
+  const character = await characterPromise;
+  if (!character) {
+    notFound();
+  }
 
-  return <CharacterDetailClient character={character} comics={comics} />;
+  // 3. Pasamos el personaje resuelto y la PROMESA de los cómics al cliente
+  return (
+    <CharacterDetailClient character={character} comicsPromise={comicsPromise} />
+  );
 }

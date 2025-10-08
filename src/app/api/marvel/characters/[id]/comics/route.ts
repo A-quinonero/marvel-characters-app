@@ -1,12 +1,14 @@
 import { NextResponse } from "next/server";
 import { mapComic, marvelFetch } from "@/app/api/marvel/_utils";
-import { MarvelComicDTO } from "@/types/api";
+import type { MarvelComicDTO } from "@/types/api";
 
-export async function GET(request: Request, context: unknown) {
-  const { params } = context as { params: { id: string } };
-  const numericId = Number(params.id);
+type Params = { id: string };
+type Ctx = { params: Promise<Params> };
 
-  if (Number.isNaN(numericId)) {
+export async function GET(_req: Request, ctx: Ctx) {
+  const { id } = await ctx.params;               // 👈 await aquí
+  const numericId = Number(id);
+  if (!Number.isFinite(numericId)) {
     return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
   }
 

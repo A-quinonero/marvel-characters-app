@@ -1,29 +1,26 @@
+// src/app/character/[id]/page.tsx
 import { notFound } from "next/navigation";
 import { fetchCharacterById, fetchComicsByCharacter } from "@/lib/api/marvel";
 import CharacterDetailClient from "@/components/CharacterDetailClient/CharacterDetailClient";
 
-type PageProps = {
-  params: { id: string };
-};
+type PageParams = { id: string };
+type PageProps = { params: Promise<PageParams> };
 
 export default async function CharacterDetailPage({ params }: PageProps) {
-  const id = Number(params.id);
-  if (Number.isNaN(id)) {
-    notFound();
-  }
+  // 👇 Next 15: params es una Promise, hay que await
+  const { id: idParam } = await params;
 
-  // 1. Lanzamos ambas peticiones en PARALELO, sin 'await'
+  const id = Number(idParam);
+  if (!Number.isFinite(id)) notFound();
+
+  // Lanza las dos en paralelo
   const characterPromise = fetchCharacterById(id);
   const comicsPromise = fetchComicsByCharacter(id);
 
-  // 2. Esperamos solo por los datos del personaje para la carga inicial
+  // Espera solo el personaje para render inicial
   const character = await characterPromise;
-  if (!character) {
-    notFound();
-  }
+  if (!character) notFound();
 
-  // 3. Pasamos el personaje resuelto y la PROMESA de los cómics al cliente
-  return (
-    <CharacterDetailClient character={character} comicsPromise={comicsPromise} />
-  );
+  // Pasa la PROMESA de los cómics al cliente (para suspense/lazy)
+  return <CharacterDetailClient character={character} comicsPromise={comicsPromise} />;
 }

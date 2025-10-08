@@ -2,8 +2,8 @@ import { NextResponse } from "next/server";
 import { mapCharacter, marvelFetch } from "@/app/api/marvel/_utils";
 import { MarvelCharacterDTO } from "@/types/api";
 
-export async function GET(req: Request) {
-  const { searchParams } = new URL(req.url);
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
   const nameStartsWith = searchParams.get("nameStartsWith") ?? undefined;
   const limit = Number(searchParams.get("limit") ?? 50);
   const offset = Number(searchParams.get("offset") ?? 0);

@@ -1,21 +1,18 @@
-// app/providers.tsx
 "use client";
 
+import { ThemeProvider } from "styled-components";
+import theme from "@/styles/theme";
+import { GlobalStyle } from "@/styles/globalStyles";
 import { CharactersProvider } from "@/context/CharactersProvider";
 import { FavoritesProvider } from "@/context/FavoritesProvider";
-import { Character } from "@/types/characters";
 
-type ClientProvidersProps = {
-  children: React.ReactNode;
-  initialCharacters?: Character[]; // Datos del servidor
-};
-
-export default function ClientProviders({ children, initialCharacters }: ClientProvidersProps) {
+export default function ClientProviders({ children }: { children: React.ReactNode }) {
   return (
-    <FavoritesProvider>
-      <CharactersProvider initialData={initialCharacters}>
-        {children}
+    <ThemeProvider theme={theme}>
+      <GlobalStyle />
+      <CharactersProvider>
+        <FavoritesProvider>{children}</FavoritesProvider>
       </CharactersProvider>
-    </FavoritesProvider>
+    </ThemeProvider>
   );
 }

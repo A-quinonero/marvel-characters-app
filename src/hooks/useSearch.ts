@@ -1,3 +1,4 @@
+// src/hooks/useSearch.ts
 "use client";
 
 import { useMemo, useRef, useState, useCallback, useEffect } from "react";
@@ -7,78 +8,106 @@ import { useCharactersContext } from "@/context/CharactersProvider";
 import { useFavorites } from "@/hooks/useFavorites";
 import type { Character } from "@/types/characters";
 
+type Debounced = ((term: string) => void) & { cancel: () => void };
+
+const MIN_CHARS = 1; 
+
 export function useSearch() {
   const { characters, loading, query, search, clearSearch } = useCharactersContext();
   const { favorites } = useFavorites();
   const params = useSearchParams();
 
-  // Estado controlado del input de búsqueda
-  const [searchTerm, setSearchTerm] = useState<string>(query);
+  const showFavorites = params.get("favorites") === "1";
 
-  // Sincronizar searchTerm con query del contexto
+  const [searchTerm, setSearchTerm] = useState<string>(query ?? "");
   useEffect(() => {
-    setSearchTerm(query);
-  }, [query]);
+    if (!showFavorites) setSearchTerm(query);
+  }, [query, showFavorites]);
 
-  // Referencia estable a search
-  const searchRef = useRef(search);
+  // Debounce estable (1 sola instancia)
+  const debouncedRef = useRef<Debounced | null>(null);
   useEffect(() => {
-    searchRef.current = search;
-  }, [search]);
+    debouncedRef.current = debounce((term: string) => {
+      if (term) {
+        void search(term);
+      } else {
+        clearSearch();
+      }
+    }, 300) as Debounced;
 
-  // Debounced search - creado una sola vez
-  const debouncedSearch = useMemo(
-    () =>
-      debounce((term: string) => {
-        void searchRef.current(term);
-      }, 300),
-    []
-  );
+    return () => debouncedRef.current?.cancel();
+  }, [search, clearSearch]);
 
-  // Handler para cambios en el input
+  const lastTermRef = useRef<string>("");
+
+  useEffect(() => {
+    if (showFavorites) debouncedRef.current?.cancel();
+  }, [showFavorites]);
+
   const handleSearch = useCallback(
     (value: string) => {
       setSearchTerm(value);
-      debouncedSearch(value.trim());
+
+      if (showFavorites) {
+        return;
+      }
+
+      const term = value.trim();
+      const norm = term.toLowerCase();
+
+      if (norm.length === 0) {
+        debouncedRef.current?.cancel();
+        lastTermRef.current = "";
+        clearSearch();
+        return;
+      }
+
+      if (norm.length < MIN_CHARS) {
+        debouncedRef.current?.cancel();
+        return;
+      }
+
+      if (norm === lastTermRef.current) return;
+      lastTermRef.current = norm;
+
+      debouncedRef.current?.(term);
     },
-    [debouncedSearch]
+    [showFavorites, clearSearch]
   );
 
-  // Limpiar debounce al desmontar
-  useEffect(() => {
-    return () => {
-      debouncedSearch.cancel();
-    };
-  }, [debouncedSearch]);
-
-  // Función para limpiar búsqueda
   const handleClearSearch = useCallback(() => {
     setSearchTerm("");
-    debouncedSearch.cancel();
+    debouncedRef.current?.cancel();
+    lastTermRef.current = "";
     clearSearch();
-  }, [clearSearch, debouncedSearch]);
+  }, [clearSearch]);
 
-  // Determinar si mostrar favoritos
-  const showFavorites = params.get("favorites") === "1";
+  const results = useMemo<Character[]>(() => {
+    if (showFavorites) {
+      const norm = searchTerm.toLowerCase().trim();
+      return norm ? favorites.filter(f => f.name.toLowerCase().includes(norm)) : favorites;
+    }
+    return characters;
+  }, [showFavorites, searchTerm, favorites, characters]);
 
-  // Lista de resultados basada en el modo
-  const results = useMemo<Character[]>(
-    () => (showFavorites ? favorites : characters),
-    [showFavorites, favorites, characters]
-  );
+  const resultsCount = results.length;
+  const counterLabel = useMemo(() => {
+    const label = showFavorites
+      ? (resultsCount === 1 ? "Favorite" : "Favorites")
+      : (resultsCount === 1 ? "Result" : "Results");
+    return `${resultsCount} ${label}`;
+  }, [resultsCount, showFavorites]);
+
+  const isSearching = !showFavorites && loading;
 
   return {
-    // Búsqueda
     searchTerm,
     handleSearch,
     handleClearSearch,
-
-    // Resultados
     results,
-    resultsCount: results.length,
-
-    // Estados
-    isSearching: loading,
+    resultsCount,
+    counterLabel,
+    isSearching,
     showFavorites,
   };
 }

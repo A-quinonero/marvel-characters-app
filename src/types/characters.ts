@@ -7,13 +7,15 @@ export interface Character {
 
 export interface CharactersState {
   characters: Character[];
+  initialCharacters: Character[]; // <-- Añadido
   loading: boolean;
   query: string;
   error?: string;
 }
 
 export type CharactersAction =
-  | { type: "SET_INITIAL"; payload: Character[] }
+  | { type: "SET_INITIAL_DATA"; payload: Character[] } // <-- Añadido
+  | { type: "RESTORE_INITIAL" } // <-- Añadido
   | { type: "SET_CHARACTERS"; payload: Character[] }
   | { type: "SET_LOADING"; payload: boolean }
   | { type: "SET_QUERY"; payload: string }

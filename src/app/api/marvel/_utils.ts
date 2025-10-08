@@ -29,13 +29,34 @@ export function mapCharacter(dto: MarvelCharacterDTO): Character {
   };
 }
 
+function toIsoIfValid(raw?: string | null): string | undefined {
+  if (!raw) return undefined;
+  const d = new Date(raw);
+  return Number.isNaN(d.getTime()) ? undefined : d.toISOString();
+}
 export function mapComic(dto: MarvelComicDTO): Comic {
-  const onsale = dto.dates?.find((d) => d.type === "onsaleDate")?.date;
+  const dates = dto.dates ?? [];
+  const get = (type: string) => dates.find(d => d.type === type)?.date;
+
+  // Orden de preferencia por fecha (ajústalo si quieres otro):
+  // 1) onsaleDate  2) focDate  3) unlimitedDate  4) digitalPurchaseDate
+  const candidates = [
+    get("onsaleDate"),
+    get("focDate"),
+    get("unlimitedDate"),
+    get("digitalPurchaseDate"),
+  ];
+
+  const firstValidIso = candidates
+    .map(toIsoIfValid)
+    .find((iso): iso is string => iso !== undefined);
+
   const thumb = dto.thumbnail ? `${dto.thumbnail.path}.${dto.thumbnail.extension}` : "";
+
   return {
     id: dto.id,
     title: dto.title,
-    onsaleDate: onsale ? new Date(onsale).toISOString() : undefined,
+    onsaleDate: firstValidIso,                // <- ¡ya no peta si es inválida!
     thumbnail: toHttps(thumb),
   };
 }

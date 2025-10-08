@@ -1,4 +1,4 @@
-import { CharactersResponse, Character } from "@/types/characters";
+import {  Character } from "@/types/characters";
 import { ComicsResponse, Comic } from "@/types/comic";
 
 const BASE = "/api/marvel";
@@ -6,17 +6,16 @@ const BASE = "/api/marvel";
 export async function fetchCharacters(
   nameStartsWith?: string,
   limit = 50,
-  offset = 0
+  offset = 0,
+  signal?: AbortSignal
 ): Promise<Character[]> {
-  const params = new URLSearchParams();
-  if (nameStartsWith) params.set("nameStartsWith", nameStartsWith);
-  params.set("limit", String(limit));
-  params.set("offset", String(offset));
+  const qs = new URLSearchParams({ limit: String(limit), offset: String(offset) });
+  if (nameStartsWith) qs.set("nameStartsWith", nameStartsWith);
 
-  const res = await fetch(`${BASE}/characters?${params.toString()}`, { cache: "no-store" });
-  if (!res.ok) throw new Error("Failed to fetch characters");
-  const data = (await res.json()) as CharactersResponse;
-  return data.results;
+  const res = await fetch(`/api/marvel/characters?${qs.toString()}`, { signal });
+  if (!res.ok) throw new Error(`API error ${res.status}`);
+  const json = await res.json();
+  return json.results as Character[];
 }
 
 export async function fetchCharacterById(id: number): Promise<Character> {

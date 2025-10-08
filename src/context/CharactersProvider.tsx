@@ -1,8 +1,9 @@
+// src/context/CharactersProvider.tsx
 "use client";
 
-import React, { createContext, useContext, useMemo, useReducer, useCallback } from "react";
+import React, { createContext, useContext, useMemo, useReducer, useCallback, useRef } from "react";
 import { charactersInitialState, charactersReducer } from "@/reducers/charactersReducer";
-import { Character } from "@/types/characters";
+import type { Character } from "@/types/characters";
 import { fetchCharacters } from "@/lib/api/marvel";
 
 type Ctx = {
@@ -12,67 +13,77 @@ type Ctx = {
   error?: string;
   search: (q: string) => Promise<void>;
   clearSearch: () => void;
+  initializeCharacters: (data: Character[]) => void;
 };
 
 const CharactersContext = createContext<Ctx | null>(null);
 
-type CharactersProviderProps = {
-  children: React.ReactNode;
-  initialData?: Character[]; // Opcional, para SSR
-};
+export const CharactersProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [state, dispatch] = useReducer(charactersReducer, charactersInitialState);
 
-export const CharactersProvider: React.FC<CharactersProviderProps> = ({
-  children,
-  initialData,
-}) => {
-  // Si hay initialData (SSR), úsalo como estado inicial
-  const [state, dispatch] = useReducer(
-    charactersReducer,
-    initialData ? { ...charactersInitialState, characters: initialData } : charactersInitialState
-  );
+  const initializeCharacters = useCallback((data: Character[]) => {
+    dispatch({ type: "SET_INITIAL_DATA", payload: data });
+  }, []);
 
-  const search = useCallback(
-    async (q: string) => {
-      // Si la búsqueda está vacía y tenemos datos iniciales, restaurar
-      if (!q && initialData) {
-        dispatch({ type: "SET_CHARACTERS", payload: initialData });
-        dispatch({ type: "SET_QUERY", payload: "" });
-        return;
-      }
+  const abortRef = useRef<AbortController | null>(null);
+  const seqRef = useRef(0);
+  const lastExecutedNormRef = useRef<string>(""); // ← último término ejecutado (normalizado)
 
-      dispatch({ type: "SET_QUERY", payload: q });
-      dispatch({ type: "SET_LOADING", payload: true });
+  const search = useCallback(async (q: string) => {
+    const norm = q.trim().toLowerCase();
 
-      try {
-        const results = await fetchCharacters(q || undefined, 50, 0);
-        dispatch({ type: "SET_CHARACTERS", payload: results });
-      } catch (error) {
-        dispatch({ type: "SET_ERROR", payload: "Error fetching characters" });
-      } finally {
+    if (!norm) {
+      abortRef.current?.abort();
+      abortRef.current = null;
+      lastExecutedNormRef.current = ""; // reset
+      dispatch({ type: "RESTORE_INITIAL" });
+      return;
+    }
+
+    // ❗ Evita refetch si piden el mismo término
+    if (norm === lastExecutedNormRef.current) return;
+
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
+
+    const mySeq = ++seqRef.current;
+
+    dispatch({ type: "SET_QUERY", payload: q });
+    dispatch({ type: "SET_LOADING", payload: true });
+
+    try {
+      const results = await fetchCharacters(q, 50, 0, controller.signal);
+      if (seqRef.current !== mySeq) return;
+      lastExecutedNormRef.current = norm; // solo si ésta ganó
+      dispatch({ type: "SET_CHARACTERS", payload: results });
+    } catch (err: unknown) {
+      if (err instanceof DOMException && err.name === "AbortError") return;
+      if (seqRef.current !== mySeq) return;
+      dispatch({ type: "SET_ERROR", payload: "Error fetching characters" });
+    } finally {
+      if (seqRef.current === mySeq) {
         dispatch({ type: "SET_LOADING", payload: false });
       }
-    },
-    [initialData]
-  );
+    }
+  }, []);
 
   const clearSearch = useCallback(() => {
-    if (initialData) {
-      dispatch({ type: "SET_CHARACTERS", payload: initialData });
-    }
-    dispatch({ type: "SET_QUERY", payload: "" });
-  }, [initialData]);
+    abortRef.current?.abort();
+    abortRef.current = null;
+    lastExecutedNormRef.current = "";
+    dispatch({ type: "RESTORE_INITIAL" });
+  }, []);
 
-  const value = useMemo<Ctx>(
-    () => ({
-      characters: state.characters,
-      loading: state.loading,
-      query: state.query,
-      error: state.error,
-      search,
-      clearSearch,
-    }),
-    [state, search, clearSearch]
-  );
+  const value = useMemo<Ctx>(() => ({
+    characters: state.characters,
+    loading: state.loading,
+    query: state.query,
+    error: state.error,
+    search,
+    clearSearch,
+    initializeCharacters,
+  }), [state, search, clearSearch, initializeCharacters]);
 
   return <CharactersContext.Provider value={value}>{children}</CharactersContext.Provider>;
 };

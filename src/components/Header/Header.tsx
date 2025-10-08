@@ -1,27 +1,27 @@
 "use client";
 
-import Link from "next/link";
-import { useRouter, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 import styled from "styled-components";
-import { useMemo, useCallback } from "react";
+import { useCallback } from "react";
 import { useFavorites } from "@/hooks/useFavorites";
+import MarvelLogo from "@/assets/icons/MarvelLogo";
+import HeartIcon from "@/assets/icons/HeartIcon";
+import { useUrlFilters } from "@/hooks/useUrlFilters";
 
 const Bar = styled.header`
-  /* Layout del Figma */
   height: 84px;
-  padding: 16px 48px;
+  padding: 0 48px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-
-  /* Estilo */
-  background: #000000;
-  color: #ffffff;
-
-  /* UX */
+  background: #000;
+  color: #fff;
   position: sticky;
   top: 0;
   z-index: 100;
+  @media (max-width: 768px) {
+    padding: 0 24px;
+  }
 `;
 
 const Left = styled.div`
@@ -29,123 +29,80 @@ const Left = styled.div`
   align-items: center;
   gap: 16px;
 `;
-
 const Right = styled.div`
   display: flex;
   align-items: center;
   gap: 16px;
 `;
-
 const Logo = styled.button`
   all: unset;
   cursor: pointer;
-  color: #ffffff;
+  color: #fff;
   font-weight: 900;
   font-size: 20px;
   letter-spacing: 0.6px;
-  line-height: 1;
-  user-select: none;
-
   &:focus-visible {
-    outline: 2px solid #ffffff;
+    outline: 2px solid #fff;
     outline-offset: 2px;
     border-radius: 4px;
   }
 `;
-
-const NavLink = styled(Link)`
-  color: #ffffffcc;
-  text-decoration: none;
-  font-size: 14px;
-
-  &:hover {
-    color: #ffffff;
-  }
-  &:focus-visible {
-    outline: 2px solid #ffffff;
-    outline-offset: 2px;
-    border-radius: 4px;
-  }
-`;
-
-const FavBadge = styled.button<{ $active?: boolean }>`
-  position: relative;
-  border: 1px solid #ffffff33;
-  background: ${({ $active }) => ($active ? "#ec1d24" : "transparent")};
-  color: #ffffff;
+const FavBadge = styled.div<{ $active?: boolean }>`
+  background: transparent;
+  color: #fff;
   cursor: pointer;
-
-  padding: 8px 12px;
+  padding: 8px 0;
   border-radius: 12px;
   font-weight: 700;
   font-size: 14px;
-
   display: inline-flex;
   align-items: center;
   gap: 8px;
-
-  transition: background 0.15s ease, border-color 0.15s ease;
-
-  &:hover {
-    border-color: #ffffff66;
-  }
-
   &:focus-visible {
-    outline: 2px solid #ffffff;
+    outline: 2px solid #fff;
     outline-offset: 2px;
   }
 `;
-
 const Counter = styled.span`
-  min-width: 22px;
-  height: 22px;
-  padding: 0 6px;
-  border-radius: 11px;
-  background: #ffffff;
-  color: #000000;
-  font-size: 12px;
+  font-size: 16px;
   font-weight: 800;
   display: inline-flex;
   align-items: center;
-  justify-content: center;
 `;
 
-/** Header principal */
 export default function Header() {
-  const router = useRouter();
   const pathname = usePathname();
   const { count } = useFavorites();
+  const { showFavorites, clearFilters, setFavorites, navigate } = useUrlFilters();
 
-  const isFavoritesView = useMemo(() => pathname?.includes("?favorites=1"), [pathname]);
-
-  const goHome = useCallback(() => router.push("/"), [router]);
+  const goHome = useCallback(() => {
+    if (pathname === "/") {
+      clearFilters(); // loader lo maneja useUrlFilters
+    } else {
+      navigate("/"); // usa navigate() para mostrar barra y reemplazar URL
+    }
+  }, [pathname, clearFilters, navigate]);
 
   const toggleFavorites = useCallback(() => {
-    if (isFavoritesView) router.push("/");
-    else router.push("/?favorites=1");
-  }, [isFavoritesView, router]);
+    setFavorites(!showFavorites); // loader y transición ya controladas en el hook
+  }, [showFavorites, setFavorites]);
 
   return (
     <Bar role="banner" aria-label="Barra de navegación">
       <Left>
         <Logo onClick={goHome} aria-label="Volver al inicio">
-          MARVEL
+          <MarvelLogo />
         </Logo>
-        <NavLink href="/" aria-label="Inicio">
-          Inicio
-        </NavLink>
       </Left>
-
       <Right>
         <FavBadge
           onClick={toggleFavorites}
-          $active={isFavoritesView}
-          aria-pressed={isFavoritesView}
-          aria-label={isFavoritesView ? "Ver todos los personajes" : "Ver favoritos"}
-          title={isFavoritesView ? "Ver todos" : "Ver favoritos"}
+          $active={showFavorites}
+          aria-pressed={showFavorites}
+          aria-label={showFavorites ? "Ver todos los personajes" : "Ver favoritos"}
+          title={showFavorites ? "Ver todos" : "Ver favoritos"}
         >
-          <span aria-hidden>★</span>
-          Favoritos
+          <HeartIcon />
           <Counter aria-label={`Número de favoritos: ${count}`}>{count}</Counter>
         </FavBadge>
       </Right>

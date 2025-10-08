@@ -1,26 +1,37 @@
 // src/app/character/[id]/page.tsx
-import { notFound } from "next/navigation";
-import { fetchCharacterById, fetchComicsByCharacter } from "@/lib/api/marvel";
-import CharacterDetailClient from "@/components/CharacterDetailClient/CharacterDetailClient";
+export const runtime = "nodejs";
 
-type PageParams = { id: string };
-type PageProps = { params: Promise<PageParams> };
+import { notFound } from "next/navigation";
+
+import type { MarvelCharacterDTO, MarvelComicDTO } from "@/types/api";
+import CharacterDetailClient from "@/components/CharacterDetailClient/CharacterDetailClient";
+import { mapCharacter, mapComic, marvelFetch } from "@/app/api/marvel/_utils";
+
+type PageProps = { params: Promise<{ id: string }> }; // Next 15: params es Promise
 
 export default async function CharacterDetailPage({ params }: PageProps) {
-  // 👇 Next 15: params es una Promise, hay que await
-  const { id: idParam } = await params;
+  const { id } = await params;              // 👈 await obligatorio en Next 15
+  const numericId = Number(id);
+  if (!Number.isFinite(numericId)) notFound();
 
-  const id = Number(idParam);
-  if (!Number.isFinite(id)) notFound();
+  // Construimos ambas promesas 100% en el servidor
+  const characterPromise = (async () => {
+    const data = await marvelFetch<MarvelCharacterDTO>(`/characters/${numericId}`);
+    const dto = data.results[0];
+    return dto ? mapCharacter(dto) : null;
+  })();
 
-  // Lanza las dos en paralelo
-  const characterPromise = fetchCharacterById(id);
-  const comicsPromise = fetchComicsByCharacter(id);
+  const comicsPromise = (async () => {
+    const data = await marvelFetch<MarvelComicDTO>(`/characters/${numericId}/comics`, {
+      limit: 20,
+      orderBy: "onsaleDate",
+    });
+    return data.results.map(mapComic);
+  })();
 
-  // Espera solo el personaje para render inicial
   const character = await characterPromise;
   if (!character) notFound();
 
-  // Pasa la PROMESA de los cómics al cliente (para suspense/lazy)
+  // Pasamos la PROMESA (ya creada en server) al cliente
   return <CharacterDetailClient character={character} comicsPromise={comicsPromise} />;
 }

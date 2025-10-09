@@ -10,32 +10,53 @@ export const Grid = styled.ul`
   margin: 0;
   width: 100%;
 
-  /* Comportamiento por defecto para ESCRITORIO y TABLET: carrusel horizontal */
+  /* Carrusel horizontal */
   display: flex;
-  overflow-x: scroll;
+  overflow-x: auto;
+  scrollbar-gutter: stable both-edges;
   gap: 16px;
   padding-bottom: 24px;
 
-  /* Estilos de la scrollbar */
+  /* Scrollbar (WebKit) */
   &::-webkit-scrollbar {
-    height: 4px;
+    height: var(--scrollbar-size, 8px); /* súbelo para testear visibilidad */
   }
-  &::-webkit-scrollbar-track {
-    background: rgba(217, 217, 217, 1);
-    width:100%;
+  &::-webkit-scrollbar-track,
+  &::-webkit-scrollbar-track-piece {
+    background: var(--scrollbar-track, #d9d9d9);
   }
   &::-webkit-scrollbar-thumb {
-    background: #ec1d24;
-    
+    background: var(--scrollbar-thumb, #ec1d24);
+    border-radius: 9999px;
   }
+  &::-webkit-scrollbar-thumb:horizontal {
+    min-width: 32px; /* mejora percepción */
+  }
+
+  /* Firefox */
   scrollbar-width: thin;
-  scrollbar-color: #ec1d24 #d9d9d9;
-  
+  scrollbar-color: var(--scrollbar-thumb, #ec1d24) var(--scrollbar-track, #d9d9d9);
+`;
+
+const EmptyItem = styled.li`
+  padding: 8px 10px;
+  opacity: 0.8;
+  white-space: nowrap;
 `;
 
 type Props = { comics: Comic[] };
 
 export default function ComicsList({ comics }: Props) {
+  if (!comics || comics.length === 0) {
+    return (
+      <Grid>
+        <EmptyItem data-testid="empty-message" role="status" aria-live="polite">
+          No comics available...
+        </EmptyItem>
+      </Grid>
+    );
+  }
+
   return (
     <Grid>
       {comics.map((comic) => (

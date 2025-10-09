@@ -10,7 +10,7 @@ import EmptyHeartIcon from "@/assets/icons/EmptyHeartIcon";
 const ImgWrap = styled.div`
   width: 100%;
   aspect-ratio: 1/1;
-  background: #f3f3f3;
+  background: var(--gray-100);
   overflow: hidden;
 `;
 
@@ -31,7 +31,7 @@ const Title = styled.h3`
   line-height: 100%;
   letter-spacing: 0%;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 1);
+  color: var(--color-white);
   flex: 1;
 `;
 
@@ -42,12 +42,12 @@ const FavBtn = styled.button<{ $active: boolean }>`
   background: transparent;
   cursor: pointer;
   font-size: 18px;
-  color: ${({ $active }) => ($active ? "#ec1d24" : "#999")};
+  color: ${({ $active }) => ($active ? "var(--color-primary)" : "var(--muted-text)")};
   line-height: 1;
   transition: color 0.25s ease-in-out;
 
   &:focus-visible {
-    outline: 2px solid #000;
+    outline: 2px solid currentColor;
     outline-offset: 2px;
     border-radius: 6px;
   }
@@ -62,17 +62,14 @@ const Content = styled.div`
   padding: 10px 12px;
   gap: 8px;
   height: 56px;
-  border-top: 5.38px solid rgba(236, 29, 36, 1);
+  border-top: 5.38px solid var(--color-primary);
   cursor: pointer;
 
   &::before {
     content: "";
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: #ec1d24;
+    inset: 0;
+    background: var(--color-primary);
     z-index: 0;
     transform: scaleY(0);
     transform-origin: top;
@@ -81,11 +78,11 @@ const Content = styled.div`
 `;
 
 const Card = styled.article`
-  border: 1px solid #eee;
+  border: 1px solid var(--card-border);
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  background: rgba(0, 0, 0, 1);
+  background: var(--card-bg);
   transition: box-shadow 0.15s ease;
   clip-path: polygon(
     0% 0%,
@@ -94,19 +91,29 @@ const Card = styled.article`
     calc(100% - 12.86px) 100%,
     0% 100%
   );
-  
-  &:hover {
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
 
+  &:hover {
     ${Content}::before {
       transform: scaleY(1);
     }
 
+    /* 1) el botón pasa a blanco */
     ${FavBtn} {
-      color: #ffffff;
+      color: var(--color-white);
+    }
+
+    /* 2) si el SVG no hereda currentColor, fuerzo fill/stroke */
+    ${FavBtn} svg,
+    ${FavBtn} path,
+    ${FavBtn} circle,
+    ${FavBtn} polygon,
+    ${FavBtn} rect {
+      fill: var(--color-white) !important;
+      stroke: var(--color-white) !important;
     }
   }
 `;
+
 
 export type CharacterCardProps = {
   id: number;

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Suspense } from "react"; // Importa Suspense y React
+import React, { Suspense } from "react";
 import styled, { keyframes } from "styled-components";
 import { useCharacterDetail } from "@/hooks/useCharacterDetail";
 import type { Character } from "@/types/characters";
@@ -10,30 +10,26 @@ import HeartIcon from "@/assets/icons/HeartIcon";
 import EmptyHeartIconDetailCharacter from "@/assets/icons/EmptyHeartIconDetailCharacter";
 import ComicsListSkeleton from "../ComicsList/ComicsListSkeleton";
 
-// ... (keyframes y styled-components de Main, CharacterResume, etc. no cambian)
 const fadeInFromAbove = keyframes`
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
 `;
 const breakpoint = "960px";
 const mobileBreakpoint = "768px";
+
 const Main = styled.main`
   animation: ${fadeInFromAbove} 0.6s ease-out forwards;
 `;
+
 const CharacterResume = styled.div`
   display: flex;
   justify-content: center;
   padding: 0;
   width: 100%;
-  background: #000000;
+  background: var(--color-black);
   clip-path: polygon(0% 0%, 100% 0%, 100% calc(100% - 24px), calc(100% - 24px) 100%, 0% 100%);
 `;
+
 const CharacterContent = styled.div`
   display: flex;
   flex-direction: row;
@@ -43,6 +39,7 @@ const CharacterContent = styled.div`
     flex-direction: column;
   }
 `;
+
 const CharacterPhoto = styled.img`
   width: 320px;
   height: 320px;
@@ -53,18 +50,20 @@ const CharacterPhoto = styled.img`
     max-height: 400px;
   }
 `;
+
 const CharacterInfo = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
   padding-left: 48px;
   gap: 24px;
-  background: #000000;
+  background: var(--color-black);
   flex-grow: 1;
   @media (max-width: ${breakpoint}) {
     padding: 24px;
   }
 `;
+
 const CharacterTitleContainer = styled.div`
   display: flex;
   flex-direction: row;
@@ -73,6 +72,7 @@ const CharacterTitleContainer = styled.div`
   gap: 24px;
   width: 100%;
 `;
+
 const CharacterTitle = styled.h1`
   margin: 0;
   font-family: "Roboto Condensed";
@@ -80,20 +80,22 @@ const CharacterTitle = styled.h1`
   font-size: 40px;
   line-height: 1.1;
   text-transform: uppercase;
-  color: #ffffff;
+  color: var(--color-white);
   @media (max-width: ${breakpoint}) {
     font-size: 32px;
   }
 `;
+
 const CharacterDescription = styled.p`
   font-family: "Roboto Condensed";
   font-style: normal;
   font-weight: 400;
   font-size: 16px;
   line-height: 1.4;
-  color: #ffffff;
+  color: var(--color-white);
   margin: 0;
 `;
+
 const ComicsResume = styled.div`
   display: flex;
   flex-direction: column;
@@ -104,6 +106,7 @@ const ComicsResume = styled.div`
     padding: 32px 16px;
   }
 `;
+
 const ComicsContent = styled.div`
   display: flex;
   flex-direction: column;
@@ -112,34 +115,33 @@ const ComicsContent = styled.div`
   gap: 24px;
   position: relative;
 `;
+
 const ComicsTitle = styled.h2`
   font-weight: 700;
   font-size: 32px;
   line-height: 1.1;
   text-transform: uppercase;
-  color: #000000;
+  color: var(--color-black);
   margin: 0;
   @media (max-width: ${mobileBreakpoint}) {
     font-size: 24px;
     padding: 0 16px;
   }
 `;
+
 const Span = styled.span`
   cursor: pointer;
 `;
 
-// Nuevo componente para "desenvolver" la promesa de los cómics
 function Comics({ promise }: { promise: Promise<Comic[]> }) {
-  // `React.use` espera a que la promesa se resuelva
   const comics = React.use(promise);
   const { sortedComics } = useCharacterDetail(null, comics);
-
   return <ComicsList comics={sortedComics} />;
 }
 
 type Props = {
   character: Character;
-  comicsPromise: Promise<Comic[]>; // Ahora recibe una promesa
+  comicsPromise: Promise<Comic[]>;
 };
 
 export default function CharacterDetailClient({ character, comicsPromise }: Props) {

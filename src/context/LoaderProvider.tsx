@@ -1,7 +1,6 @@
 "use client";
 
 import { createContext, useState, useContext, ReactNode, useCallback, useMemo, useRef } from "react";
-import ProgressBar from "@/components/ProgressBar/ProgressBar";
 
 type LoaderContextType = {
   showLoader: () => void;
@@ -43,7 +42,6 @@ export function LoaderProvider({ children }: { children: ReactNode }) {
 
   return (
     <LoaderContext.Provider value={value}>
-      <ProgressBar />
       {children}
     </LoaderContext.Provider>
   );

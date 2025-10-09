@@ -1,15 +1,14 @@
 "use client";
+
 import styled, { keyframes } from "styled-components";
 
-// 1. Replicamos los estilos estructurales de CharacterCard para que la forma coincida.
 const Card = styled.article`
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  background: #202020; // Un color de fondo oscuro para el esqueleto
+  background: var(--skeleton-bg);
   clip-path: polygon(
-    0% 0%,
-    100% 0%,
+    0% 0%, 100% 0%,
     100% calc(100% - 12.86px),
     calc(100% - 12.86px) 100%,
     0% 100%
@@ -19,7 +18,7 @@ const Card = styled.article`
 const ImgWrap = styled.div`
   width: 100%;
   aspect-ratio: 1/1;
-  background: #333; // Color base para la imagen del esqueleto
+  background: var(--skeleton-img-bg);
 `;
 
 const Content = styled.div`
@@ -29,32 +28,34 @@ const Content = styled.div`
   padding: 10px 12px;
   gap: 8px;
   height: 56px;
-  border-top: 5.38px solid #444; // Color base para el borde
+  border-top: 5.38px solid var(--card-border);
 `;
 
-// 2. Creamos la animación de brillo
 const shimmer = keyframes`
-  0% {
-    background-position: -200% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
 `;
 
-// 3. Creamos un bloque base para los elementos del esqueleto que tendrá la animación
 const SkeletonBlock = styled.div`
-  background: linear-gradient(90deg, #333 25%, #444 50%, #333 75%);
+  background: linear-gradient(
+    90deg,
+    var(--skeleton-base) 25%,
+    var(--skeleton-highlight) 50%,
+    var(--skeleton-base) 75%
+  );
   background-size: 200% 100%;
-  animation: ${shimmer} 1.5s infinite;
-  border-radius: 4px;
+  animation: ${shimmer} var(--skeleton-speed) infinite;
+  border-radius: var(--skeleton-radius);
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
 `;
 
-// Elementos específicos del esqueleto
 const SkeletonImage = styled(SkeletonBlock)`
   width: 100%;
   height: 100%;
-  border-radius: 0; // La imagen no necesita bordes redondeados
+  border-radius: 0;
 `;
 
 const SkeletonText = styled(SkeletonBlock)`
@@ -67,7 +68,6 @@ const SkeletonIcon = styled(SkeletonBlock)`
   width: 18px;
 `;
 
-// 4. Montamos el componente Skeleton final
 export default function CharacterCardSkeleton() {
   return (
     <Card aria-busy="true" aria-live="polite">

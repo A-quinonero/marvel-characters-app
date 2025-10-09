@@ -1,26 +1,35 @@
 "use client";
 
 import styled, { keyframes } from "styled-components";
-import { Grid } from "./ComicsList"; // 1. Reutiliza el layout de la lista
-import { Item } from "../ComicItem/ComicItem"; // 2. Reutiliza el layout de cada item
+import { Grid } from "./ComicsList";
+import { Item } from "../ComicItem/ComicItem";
 
-// 3. Define la animación de brillo (shimmer)
 const shimmer = keyframes`
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
 `;
 
-// 4. Crea los bloques de contenido del esqueleto
 const SkeletonBlock = styled.div`
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  /* Gradient y colores controlados por variables */
+  background: linear-gradient(
+    90deg,
+    var(--skeleton-base) 25%,
+    var(--skeleton-highlight) 50%,
+    var(--skeleton-base) 75%
+  );
   background-size: 200% 100%;
-  animation: ${shimmer} 1.5s infinite;
+  animation: ${shimmer} var(--skeleton-speed) infinite;
+  border-radius: var(--skeleton-radius);
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
 `;
 
 const SkeletonCover = styled(SkeletonBlock)`
   width: 100%;
   aspect-ratio: 2/3;
-  background-color: #f5f5f5;
+  background-color: var(--skeleton-img-bg);
 `;
 
 const SkeletonMeta = styled.div`
@@ -33,19 +42,16 @@ const SkeletonMeta = styled.div`
 const SkeletonTitle = styled(SkeletonBlock)`
   height: 14px;
   width: 90%;
-  border-radius: 4px;
 `;
 
 const SkeletonDate = styled(SkeletonBlock)`
   height: 12px;
   width: 60%;
-  border-radius: 4px;
 `;
 
 export default function ComicsListSkeleton() {
   return (
     <Grid>
-      {/* 5. Renderiza una lista de 5 items de esqueleto */}
       {Array.from({ length: 5 }).map((_, index) => (
         <Item key={`skeleton-${index}`}>
           <SkeletonCover />

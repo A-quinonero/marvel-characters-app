@@ -8,21 +8,10 @@ import { formatOnSaleDate } from "@/lib/utils/formatters";
 const mobileBreakpoint = "768px";
 
 export const Item = styled.li`
-  border: 1px solid #eee;
-  border-radius: 12px;
-  overflow: hidden;
-  background: #fff;
-
-  /* --- INICIO DE LA SOLUCIÓN --- */
-
-  /* Por defecto (escritorio/tablet), el cómic tiene un ancho fijo */
-  width: 180px;
-  /* Y le prohibimos encogerse */
-  flex-shrink: 0;
   
-  /* --- FIN DE LA SOLUCIÓN --- */
-
-  /* En móvil, simplemente ajustamos el ancho si es necesario */
+  overflow: hidden;
+  width: 180px;
+  flex-shrink: 0;
   @media (max-width: ${mobileBreakpoint}) {
     width: 164px;
   }
@@ -33,7 +22,7 @@ const Cover = styled.img`
   aspect-ratio: 2/3;
   object-fit: cover;
   display: block;
-  background: #f5f5f5;
+  background: var(--gray-100);
 `;
 
 const Meta = styled.div`
@@ -41,7 +30,8 @@ const Meta = styled.div`
 `;
 
 const Title = styled.h3`
-  font-size: 14px;
+  color: var(--card-title);
+  font-size: 16px;
   margin: 0 0 6px;
   line-height: 1.3;
   display: -webkit-box;
@@ -54,7 +44,7 @@ const Title = styled.h3`
 
 const DateText = styled.time`
   font-size: 12px;
-  color: #666;
+  color: var(--muted-text);
 `;
 
 type Props = { comic: Comic };

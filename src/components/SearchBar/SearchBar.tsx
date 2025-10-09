@@ -1,4 +1,3 @@
-// src/components/SearchBar/SearchBar.tsx
 "use client";
 
 import SearchIcon from "@/assets/icons/SearchIcon";
@@ -13,9 +12,9 @@ const Wrapper = styled.div`
     left: 8px;
     top: 50%;
     transform: translateY(-50%);
-    width: 16px; /* <- unidades px */
-    height: 16px; /* <- unidades px */
-    color: #888;
+    width: 16px;
+    height: 16px;
+    color: var(--icon-muted, #888);
     pointer-events: none;
   }
 `;
@@ -24,17 +23,21 @@ const Input = styled.input`
   width: 100%;
   padding: 10px 12px 10px 32px; /* espacio para el icono */
   border: transparent;
-  border-bottom: 1px solid rgba(0, 0, 0, 1);
+  border-bottom: 1px solid var(--input-border, rgba(0, 0, 0, 1));
   font-size: 16px;
   outline: none;
   box-sizing: border-box;
   text-transform: uppercase;
 
+  background: var(--input-bg, #fff);
+  color: var(--input-text, #111);
+
   &:focus {
-    border-color: #bbb;
+    border-color: var(--input-focus-border, #bbb);
   }
+
   ::placeholder {
-    color: rgba(170, 170, 170, 1);
+    color: var(--input-placeholder, rgba(170, 170, 170, 1));
   }
 `;
 

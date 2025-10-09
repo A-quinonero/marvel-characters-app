@@ -1,5 +1,4 @@
 "use client";
-// src/lib/registry.tsx
 
 import React, { useState } from "react";
 import { useServerInsertedHTML } from "next/navigation";

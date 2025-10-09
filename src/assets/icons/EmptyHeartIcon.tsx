@@ -2,7 +2,6 @@
 
 import React from "react";
 
-// Le pasamos las props (...) para que pueda recibir atributos como 'className'
 const EmptyHeartIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
     width="15"

@@ -1,11 +1,12 @@
 // src/app/layout.tsx
 import type { Metadata } from "next";
-import StyledComponentsRegistry from "@/lib/registry";
+import StyledComponentsRegistry from "@/lib/StyledComponentsRegistry";
 import ClientProviders from "./providers";
 import Header from "@/components/Header/Header";
 import { Roboto_Condensed } from "next/font/google";
 import { LoaderProvider } from "@/context/LoaderProvider";
 import { Suspense } from "react";
+import { HeaderSpacer } from "@/components/Header/HeaderSpacer";
 
 const robotoCondensed = Roboto_Condensed({
   subsets: ["latin"],
@@ -29,6 +30,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <Suspense fallback={null}>
                 <Header />
               </Suspense>
+                <HeaderSpacer/>
               {children}
             </LoaderProvider>
           </ClientProviders>

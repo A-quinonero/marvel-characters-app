@@ -9,6 +9,8 @@ import ComicsList from "@/components/ComicsList/ComicsList";
 import HeartIcon from "@/assets/icons/HeartIcon";
 import EmptyHeartIconDetailCharacter from "@/assets/icons/EmptyHeartIconDetailCharacter";
 import ComicsListSkeleton from "../ComicsList/ComicsListSkeleton";
+import Image from "next/image";
+import { baseFromMarvel, marvelSquareLoader } from "@/lib/marvelImageLoader";
 
 const fadeInFromAbove = keyframes`
   from { opacity: 0; transform: translateY(-20px); }
@@ -40,11 +42,9 @@ const CharacterContent = styled.div`
   }
 `;
 
-const CharacterPhoto = styled.img`
-  width: 320px;
-  height: 320px;
+const CharacterPhoto = styled(Image)`
   object-fit: cover;
-  @media (max-width: ${breakpoint}) {
+  @media (max-width: 960px) {
     width: 100%;
     height: auto;
     max-height: 400px;
@@ -151,7 +151,13 @@ export default function CharacterDetailClient({ character, comicsPromise }: Prop
     <Main>
       <CharacterResume>
         <CharacterContent>
-          <CharacterPhoto src={character.thumbnail} alt={character.name} />
+          <CharacterPhoto
+            loader={marvelSquareLoader}
+            src={character.thumbnail}
+            alt={character.name}
+            width={320}
+            height={320}
+          />
           <CharacterInfo>
             <CharacterTitleContainer>
               <CharacterTitle>{character.name}</CharacterTitle>

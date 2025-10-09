@@ -2,12 +2,13 @@
 
 import { usePathname } from "next/navigation";
 import styled from "styled-components";
-import { useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useFavorites } from "@/hooks/useFavorites";
 import MarvelLogo from "@/assets/icons/MarvelLogo";
 import HeartIcon from "@/assets/icons/HeartIcon";
 import { useUrlFilters } from "@/hooks/useUrlFilters";
 import ProgressBar from "../ProgressBar/ProgressBar";
+import { useSearch } from "@/hooks/useSearch";
 
 // src/components/Header/Header.tsx
 const Bar = styled.header`
@@ -82,10 +83,14 @@ export default function Header() {
   const pathname = usePathname();
   const { count } = useFavorites();
   const { showFavorites, clearFilters, setFavorites, navigate, setFavoritesAt } = useUrlFilters();
+  const { handleClearSearch } = useSearch();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
   const goHome = useCallback(() => {
     if (pathname === "/") {
       clearFilters();
+      handleClearSearch();
     } else {
       navigate("/");
     }
@@ -97,6 +102,7 @@ export default function Header() {
     }
 
     if (pathname === "/" && !showFavorites) {
+      clearFilters();
       setFavorites(true);
       return;
     }
@@ -104,17 +110,19 @@ export default function Header() {
       setFavoritesAt(true, "/");
       return;
     }
-  }, [pathname, showFavorites, setFavorites, setFavoritesAt]);
+  }, [pathname, showFavorites, setFavorites, setFavoritesAt, clearFilters]);
 
+  const safeCount = mounted ? count : 0;
   return (
     <Bar role="banner" aria-label="Barra de navegación">
       <Left>
-        <Logo onClick={goHome} aria-label="Volver al inicio">
+        <Logo data-cy="header-logo" onClick={goHome} aria-label="Volver al inicio">
           <MarvelLogo />
         </Logo>
       </Left>
       <Right>
         <FavBadge
+          data-cy="header-favorites-button"
           onClick={toggleFavorites}
           $active={showFavorites}
           aria-pressed={showFavorites}
@@ -122,7 +130,7 @@ export default function Header() {
           title={showFavorites ? "Ver todos" : "Ver favoritos"}
         >
           <HeartIcon />
-          <Counter aria-label={`Número de favoritos: ${count}`}>{count}</Counter>
+          <Counter aria-label={`Número de favoritos: ${safeCount}`}>{safeCount}</Counter>
         </FavBadge>
       </Right>
       <ProgressBar />

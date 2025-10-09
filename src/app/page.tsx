@@ -18,7 +18,7 @@ export default async function HomePage() {
     offset: 0,
     orderBy: "name",
   });
-  const initial = data.results.map(mapCharacter);
+  const initial = data.results.map(mapCharacter );
 
   return (
     <Suspense fallback={<HomeFallback />}>

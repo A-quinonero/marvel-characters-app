@@ -5,6 +5,7 @@ import nextPlugin from "@next/eslint-plugin-next";
 import reactHooksPlugin from "eslint-plugin-react-hooks";
 import jsxA11yPlugin from "eslint-plugin-jsx-a11y";
 import prettierConfig from "eslint-config-prettier";
+import cypressPlugin from "eslint-plugin-cypress"; // ⬅️ NUEVO
 
 const eslintConfig = [
   {
@@ -30,9 +31,11 @@ const eslintConfig = [
     },
     rules: {},
   },
-  
+
+  // Bloque TS general (ignora Cypress para que no use tsconfig.json)
   {
     files: ["**/*.{ts,tsx}"],
+    ignores: ["cypress/**", "cypress.config.ts"], // ⬅️ NUEVO
     plugins: {
       "@typescript-eslint": typescriptEslint,
     },
@@ -64,9 +67,33 @@ const eslintConfig = [
       "react-hooks/exhaustive-deps": "warn",
     },
     settings: {
-      react: {
-        version: "detect",
+      react: { version: "detect" },
+    },
+  },
+
+  // 🔽 Bloque Cypress (usa tsconfig.cypress.json y reglas del plugin)
+  {
+    files: ["cypress/**/*.ts", "cypress/**/*.tsx", "cypress.config.ts"],
+    plugins: {
+      cypress: cypressPlugin,
+      "@typescript-eslint": typescriptEslint,
+    },
+    languageOptions: {
+      parser: typescriptParser,
+      parserOptions: {
+        ecmaFeatures: { jsx: true },
+        project: "./tsconfig.cypress.json", // ⬅️ clave para el error de parsing
       },
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+        cy: "readonly",
+        Cypress: "readonly"
+      },
+    },
+    rules: {
+      ...(cypressPlugin.configs.recommended?.rules ?? {}),
+      // Puedes añadir reglas TS específicas si quieres
     },
   },
 

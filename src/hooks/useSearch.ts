@@ -10,7 +10,7 @@ import type { Character } from "@/types/characters";
 
 type Debounced = ((term: string) => void) & { cancel: () => void };
 
-const MIN_CHARS = 1; 
+const MIN_CHARS = 1;
 
 export function useSearch() {
   const { characters, loading, query, search, clearSearch } = useCharactersContext();
@@ -20,6 +20,7 @@ export function useSearch() {
   const showFavorites = params.get("favorites") === "1";
 
   const [searchTerm, setSearchTerm] = useState<string>(query ?? "");
+  
   useEffect(() => {
     if (!showFavorites) setSearchTerm(query);
   }, [query, showFavorites]);
@@ -41,7 +42,9 @@ export function useSearch() {
   const lastTermRef = useRef<string>("");
 
   useEffect(() => {
-    if (showFavorites) debouncedRef.current?.cancel();
+    if (showFavorites) {
+      handleClearSearch();
+      debouncedRef.current?.cancel()};
   }, [showFavorites]);
 
   const handleSearch = useCallback(
@@ -83,20 +86,19 @@ export function useSearch() {
   }, [clearSearch]);
 
   const results = useMemo<Character[]>(() => {
-    if (showFavorites) {
+    if (showFavorites) { 
       const norm = searchTerm.toLowerCase().trim();
-      return norm ? favorites.filter(f => f.name.toLowerCase().includes(norm)) : favorites;
+      return norm ? favorites.filter((f) => f.name.toLowerCase().includes(norm)) : favorites;
     }
     return characters;
   }, [showFavorites, searchTerm, favorites, characters]);
 
   const resultsCount = results.length;
+
   const counterLabel = useMemo(() => {
-    const label = showFavorites
-      ? (resultsCount === 1 ? "Favorite" : "Favorites")
-      : (resultsCount === 1 ? "Result" : "Results");
+    const label = resultsCount === 1 ? "Result" : "Results";
     return `${resultsCount} ${label}`;
-  }, [resultsCount, showFavorites]);
+  }, [resultsCount]);
 
   const isSearching = !showFavorites && loading;
 

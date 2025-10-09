@@ -200,7 +200,7 @@ describe("useSearch", () => {
     expect(screen.getByTestId("term").textContent).toBe(""); // term limpiado
   });
 
-  it("modo favoritos: no ejecuta search/clear, filtra localmente, etiqueta 'Favorite(s)', isSearching=false", () => {
+ it("modo favoritos: no ejecuta search/clear tras escribir; filtra localmente; etiqueta siempre 'Result(s)'; isSearching=false", () => {
     (useSearchParams as jest.Mock).mockReturnValue(makeParams("1"));
 
     // Simulamos loading=true en el contexto; isSearching debe seguir false (porque showFavorites=true)
@@ -213,11 +213,13 @@ describe("useSearch", () => {
     expect(screen.getByTestId("showFav").textContent).toBe("true");
     expect(screen.getByTestId("searching").textContent).toBe("false");
 
+    expect(ctx.clearSearch).toHaveBeenCalledTimes(1);
     // Sin término → muestra todos los favoritos
     expect(screen.getByTestId("results").textContent).toBe("Iron Man,Thor");
     expect(screen.getByTestId("count").textContent).toBe("2");
-    expect(screen.getByTestId("label").textContent).toBe("2 Favorites");
+    expect(screen.getByTestId("label").textContent).toBe("2 Results");
 
+    (ctx.clearSearch as jest.Mock).mockClear();
     // Introducimos término 'man' → filtra localmente (no search())
     fireEvent.click(screen.getByTestId("set-man"));
     expect(ctx.search).not.toHaveBeenCalled();
@@ -226,7 +228,7 @@ describe("useSearch", () => {
     // Debe filtrar por nombre (case-insensitive, incluye 'man' → "Iron Man")
     expect(screen.getByTestId("results").textContent).toBe("Iron Man");
     expect(screen.getByTestId("count").textContent).toBe("1");
-    expect(screen.getByTestId("label").textContent).toBe("1 Favorite");
+    expect(screen.getByTestId("label").textContent).toBe("1 Result");
   });
 
   it("modo normal: results y etiqueta 'Result(s)', isSearching sigue a loading", () => {

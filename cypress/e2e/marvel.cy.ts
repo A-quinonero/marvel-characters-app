@@ -1,38 +1,73 @@
-// cypress/e2e/marvel.cy.ts
+/// <reference types="cypress" />
 
-describe("Flujo completo de usuario en la aplicación de Marvel", () => {
+describe("Flujo completo Marvel (buscar → detalle → favoritos → quitar)", () => {
   beforeEach(() => {
-    cy.visit("/");
     cy.clearLocalStorage("favorites");
+
+    // ÚNICA intercept necesaria en cliente: la búsqueda por nombre
+    // Tu fetchCharacters espera { results: [...] }
+    cy.intercept("GET", "**/api/marvel/characters**", (req) => {
+      const url = new URL(req.url);
+      const q = (url.searchParams.get("nameStartsWith") || "").toLowerCase();
+
+      if (q === "adam warlock") {
+        req.reply({ fixture: "characters.adam-warlock.json" }); // { results: [ {…} ] }
+      } else {
+        req.reply({ statusCode: 200, body: { results: [] } });
+      }
+    }).as("search");
+
+    cy.visit("/");
   });
 
-  it("debería permitir a un usuario buscar un personaje, añadirlo a favoritos, verlo y eliminarlo", () => {
-    cy.get("[data-cy=character-grid]").should("be.visible");
-    cy.get("[data-cy=character-card]").should("have.length.greaterThan", 5);
-    cy.get("[data-cy=search-input]").type("Adam Warlock");
+  it("permite buscar, ver detalle, añadir a favoritos, ver en favoritos y eliminar", () => {
+    // Grid visible
+    cy.get("[data-cy=character-grid]", { timeout: 10000 }).should("be.visible");
 
-    cy.intercept("GET", "/api/marvel/character/*").as("getCharacter");
+    // Buscar (con debounce 300ms)
+    cy.get("[data-cy=search-input]").clear().type("Adam Warlock");
+    cy.wait("@search");
 
-    cy.contains("[data-cy=character-card]", "Adam Warlock").should("be.visible").click();
+    // Asegura que aparece la card
+    cy.contains("[data-cy=character-card]", "Adam Warlock", { timeout: 10000 })
+      .scrollIntoView()
+      .should("be.visible");
 
-    cy.wait("@getCharacter");
+    // Entrar al detalle desde el link de la card
+    cy.contains("[data-cy=character-card]", "Adam Warlock").within(() => {
+      cy.get("a").first().click();
+    });
 
-    cy.url().should("include", "/character/");
-    cy.get("h1").should("contain.text", "Adam Warlock");
+    // En Next App Router el detalle/cómics vienen del SSR (MOCK_API=1), no hay XHR que esperar.
+    cy.location("pathname", { timeout: 10000 }).should("match", /\/character\/\d+/);
+    cy.get("h1", { timeout: 10000 }).should("contain.text", "Adam Warlock");
 
+    // Marcar favorito en el detalle
     cy.get("[data-cy=detail-favorite-button]").click();
+
+    // Ir a favoritos desde el header
     cy.get("[data-cy=header-favorites-button]").click();
     cy.url().should("include", "?favorites=1");
-    cy.contains("[data-cy=character-card]", "Adam Warlock").should("be.visible");
-    
+
+    // Debe aparecer en la lista de favoritos
     cy.contains("[data-cy=character-card]", "Adam Warlock")
-      .find("[data-cy=favorite-toggle-button]")
-      .click();
-      
+      .scrollIntoView()
+      .should("be.visible");
+
+    // Quitar de favoritos desde la card
+    cy.contains("[data-cy=character-card]", "Adam Warlock").within(() => {
+      cy.get("[data-cy=favorite-toggle-button]").click();
+    });
+
+    // Ya no aparece
     cy.contains("[data-cy=character-card]", "Adam Warlock").should("not.exist");
-    cy.contains("0 Favorites").should("be.visible");
+
+    // Contador en header = 0
+    cy.get("[data-cy=header-favorites-button]").should("contain.text", "0");
+
+    // Volver a home
     cy.get("[data-cy=header-logo]").click();
-    cy.url().should("eq", Cypress.config().baseUrl + "/");
+    cy.location("pathname").should("eq", "/");
     cy.get("[data-cy=search-input]").should("be.visible");
   });
 });

@@ -10,7 +10,10 @@ const PRIVATE_KEY = process.env.MARVEL_PRIVATE_KEY!;
 
 export function authQS(): string {
   const ts = Date.now().toString();
-  const hash = crypto.createHash("md5").update(ts + PRIVATE_KEY + PUBLIC_KEY).digest("hex");
+  const hash = crypto
+    .createHash("md5")
+    .update(ts + PRIVATE_KEY + PUBLIC_KEY)
+    .digest("hex");
   return new URLSearchParams({ ts, apikey: PUBLIC_KEY, hash }).toString();
 }
 
@@ -19,15 +22,19 @@ export function toHttps(url?: string | null): string {
   return url.replace(/^http:\/\//i, "https://");
 }
 
+// src/app/api/marvel/_utils.ts
 export function mapCharacter(dto: MarvelCharacterDTO): Character {
-  const thumb = dto.thumbnail ? `${dto.thumbnail.path}.${dto.thumbnail.extension}` : "";
+  const fallback = dto.thumbnail
+    ? `${dto.thumbnail.path}/standard_fantastic.${dto.thumbnail.extension}`
+    : '';
   return {
     id: dto.id,
     name: dto.name,
-    description: dto.description ?? "",
-    thumbnail: toHttps(thumb),
+    description: dto.description ?? '',
+    thumbnail: toHttps(fallback), // El loader calculará el variant óptimo
   };
 }
+
 
 function toIsoIfValid(raw?: string | null): string | undefined {
   if (!raw) return undefined;
@@ -37,27 +44,18 @@ function toIsoIfValid(raw?: string | null): string | undefined {
 export function mapComic(dto: MarvelComicDTO): Comic {
   const dates = dto.dates ?? [];
   const get = (type: string) => dates.find(d => d.type === type)?.date;
+  const candidates = [get("onsaleDate"), get("focDate"), get("unlimitedDate"), get("digitalPurchaseDate")];
+  const firstValidIso = candidates.map(toIsoIfValid).find((iso): iso is string => iso !== undefined);
 
-  // Orden de preferencia por fecha (ajústalo si quieres otro):
-  // 1) onsaleDate  2) focDate  3) unlimitedDate  4) digitalPurchaseDate
-  const candidates = [
-    get("onsaleDate"),
-    get("focDate"),
-    get("unlimitedDate"),
-    get("digitalPurchaseDate"),
-  ];
-
-  const firstValidIso = candidates
-    .map(toIsoIfValid)
-    .find((iso): iso is string => iso !== undefined);
-
-  const thumb = dto.thumbnail ? `${dto.thumbnail.path}.${dto.thumbnail.extension}` : "";
+  const base = dto.thumbnail ? `${dto.thumbnail.path}` : "";
+  const ext = dto.thumbnail?.extension ?? "jpg";
+  const withVariant = base ? `${base}/portrait_medium.${ext}` : "";
 
   return {
     id: dto.id,
     title: dto.title,
-    onsaleDate: firstValidIso,                // <- ¡ya no peta si es inválida!
-    thumbnail: toHttps(thumb),
+    onsaleDate: firstValidIso,
+    thumbnail: toHttps(withVariant),
   };
 }
 

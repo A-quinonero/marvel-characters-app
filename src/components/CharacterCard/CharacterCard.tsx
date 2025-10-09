@@ -1,22 +1,24 @@
+// src/components/CharacterCard/CharacterCard.tsx
 "use client";
 
 import { memo, useCallback, useMemo } from "react";
 import styled from "styled-components";
+import Image from "next/image";
 import TransitionLink from "@/components/TransitionLink/TransitionLink";
 import { useFavorites } from "@/hooks/useFavorites";
 import HeartIcon from "@/assets/icons/HeartIcon";
 import EmptyHeartIcon from "@/assets/icons/EmptyHeartIcon";
+import { marvelSquareLoader, baseFromMarvel } from "@/lib/marvelImageLoader";
 
 const ImgWrap = styled.div`
+  position: relative; /* necesario para fill */
   width: 100%;
-  aspect-ratio: 1/1;
+  aspect-ratio: 1 / 1;
   background: var(--gray-100);
   overflow: hidden;
 `;
 
-const Img = styled.img`
-  width: 100%;
-  height: 100%;
+const Img = styled(Image)`
   object-fit: cover;
   display: block;
 `;
@@ -26,10 +28,7 @@ const Title = styled.h3`
   z-index: 1;
   font-family: Roboto Condensed;
   font-weight: 400;
-  font-style: Regular;
   font-size: 14px;
-  line-height: 100%;
-  letter-spacing: 0%;
   text-transform: uppercase;
   color: var(--color-white);
   flex: 1;
@@ -84,41 +83,28 @@ const Card = styled.article`
   flex-direction: column;
   background: var(--card-bg);
   transition: box-shadow 0.15s ease;
-  clip-path: polygon(
-    0% 0%,
-    100% 0%,
-    100% calc(100% - 12.86px),
-    calc(100% - 12.86px) 100%,
-    0% 100%
-  );
+  clip-path: polygon(0% 0%, 100% 0%, 100% calc(100% - 12.86px), calc(100% - 12.86px) 100%, 0% 100%);
 
   &:hover {
     ${Content}::before {
       transform: scaleY(1);
     }
 
-    /* 1) el botón pasa a blanco */
     ${FavBtn} {
       color: var(--color-white);
     }
 
-    /* 2) si el SVG no hereda currentColor, fuerzo fill/stroke */
-    ${FavBtn} svg,
-    ${FavBtn} path,
-    ${FavBtn} circle,
-    ${FavBtn} polygon,
-    ${FavBtn} rect {
+    ${FavBtn} svg, ${FavBtn} path, ${FavBtn} circle, ${FavBtn} polygon, ${FavBtn} rect {
       fill: var(--color-white) !important;
       stroke: var(--color-white) !important;
     }
   }
 `;
 
-
 export type CharacterCardProps = {
   id: number;
   name: string;
-  thumbnail: string;
+  thumbnail: string; // cualquier variante de marvel; el loader la ajusta
 };
 
 function CharacterCardBase({ id, name, thumbnail }: CharacterCardProps) {
@@ -130,21 +116,31 @@ function CharacterCardBase({ id, name, thumbnail }: CharacterCardProps) {
     else addFavorite({ id, name, thumbnail });
   }, [active, id, name, thumbnail, addFavorite, removeFavorite]);
 
-  const aria = useMemo(
-    () => (active ? "Quitar de favoritos" : "Añadir a favoritos"),
-    [active]
-  );
+  const aria = useMemo(() => (active ? "Quitar de favoritos" : "Añadir a favoritos"), [active]);
 
   return (
     <Card data-cy="character-card">
       <TransitionLink href={`/character/${id}`} aria-label={`Ver detalle de ${name}`}>
         <ImgWrap>
-          <Img src={thumbnail} alt={name} loading="lazy" />
+          <Img
+            loader={marvelSquareLoader}
+            src={thumbnail}
+            alt={name}
+            fill
+            sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 180px"
+          />
         </ImgWrap>
       </TransitionLink>
       <Content>
         <Title title={name}>{name}</Title>
-        <FavBtn onClick={toggle} $active={active} aria-pressed={active} aria-label={aria} title={aria}>
+        <FavBtn
+          data-cy="favorite-toggle-button"
+          onClick={toggle}
+          $active={active}
+          aria-pressed={active}
+          aria-label={aria}
+          title={aria}
+        >
           {active ? <HeartIcon width={12} height={10.84} /> : <EmptyHeartIcon />}
         </FavBtn>
       </Content>

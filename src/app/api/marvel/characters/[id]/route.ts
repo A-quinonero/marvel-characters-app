@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { mapCharacter, marvelFetch } from "@/app/api/marvel/_utils";
+import {  mapCharacter, marvelFetch } from "@/app/api/marvel/_utils";
 import type { MarvelCharacterDTO } from "@/types/api";
 
 type Params = { id: string };
@@ -18,5 +18,5 @@ export async function GET(_req: Request, ctx: Ctx) {
     return NextResponse.json({ error: "Character not found" }, { status: 404 });
   }
 
-  return NextResponse.json(mapCharacter(dto));
+  return NextResponse.json(mapCharacter);
 }

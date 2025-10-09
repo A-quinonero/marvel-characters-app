@@ -18,6 +18,11 @@ jest.mock("@/hooks/useUrlFilters", () => ({
   useUrlFilters: jest.fn(),
 }));
 
+// 🆕 Mock de useSearch para poder controlar handleClearSearch
+jest.mock("@/hooks/useSearch", () => ({
+  useSearch: jest.fn(),
+}));
+
 jest.mock("@/assets/icons/MarvelLogo", () => ({
   __esModule: true,
   default: () => <div data-testid="marvel-logo" />,
@@ -37,6 +42,7 @@ jest.mock("../ProgressBar/ProgressBar", () => ({
 const { usePathname } = jest.requireMock("next/navigation");
 const { useFavorites } = jest.requireMock("@/hooks/useFavorites");
 const { useUrlFilters } = jest.requireMock("@/hooks/useUrlFilters");
+const { useSearch } = jest.requireMock("@/hooks/useSearch");
 
 describe("Header", () => {
   const makeUrlFilters = (overrides: Partial<ReturnType<typeof useUrlFilters>> = {}) => {
@@ -56,9 +62,15 @@ describe("Header", () => {
     };
   };
 
+  let handleClearSearch: jest.Mock;
+
   beforeEach(() => {
     jest.clearAllMocks();
     (useFavorites as jest.Mock).mockReturnValue({ count: 0 });
+
+    // mock por defecto del hook de búsqueda
+    handleClearSearch = jest.fn();
+    (useSearch as jest.Mock).mockReturnValue({ handleClearSearch });
   });
 
   it("renderiza logo, contador, icono de corazón y progress bar", () => {
@@ -73,18 +85,16 @@ describe("Header", () => {
     expect(screen.getByTestId("heart-icon")).toBeInTheDocument();
     expect(screen.getByTestId("progress-bar")).toBeInTheDocument();
 
-    // El contador muestra 3 y expone aria-label accesible
     const counter = screen.getByText("3");
     expect(counter).toBeInTheDocument();
     expect(counter).toHaveAttribute("aria-label", "Número de favoritos: 3");
 
-    // El badge de favoritos expone los atributos accesibles correctos
     const favBadge = screen.getByTitle("Ver favoritos");
     expect(favBadge).toHaveAttribute("aria-label", "Ver favoritos");
     expect(favBadge).toHaveAttribute("aria-pressed", "false");
   });
 
-  it('al hacer click en el logo estando en "/" llama a clearFilters y no a navigate', () => {
+  it('al hacer click en el logo estando en "/" llama a clearFilters y a handleClearSearch, y no a navigate', () => {
     const filters = makeUrlFilters({ showFavorites: false });
     (usePathname as jest.Mock).mockReturnValue("/");
     (useUrlFilters as jest.Mock).mockReturnValue(filters);
@@ -95,10 +105,11 @@ describe("Header", () => {
     fireEvent.click(logoBtn);
 
     expect(filters.clearFilters).toHaveBeenCalledTimes(1);
+    expect(handleClearSearch).toHaveBeenCalledTimes(1);
     expect(filters.navigate).not.toHaveBeenCalled();
   });
 
-  it('al hacer click en el logo estando en otra ruta llama a navigate("/")', () => {
+  it('al hacer click en el logo estando en otra ruta llama a navigate("/") y NO a clearFilters ni a handleClearSearch', () => {
     const filters = makeUrlFilters({ showFavorites: false });
     (usePathname as jest.Mock).mockReturnValue("/character/123");
     (useUrlFilters as jest.Mock).mockReturnValue(filters);
@@ -111,6 +122,7 @@ describe("Header", () => {
     expect(filters.navigate).toHaveBeenCalledTimes(1);
     expect(filters.navigate).toHaveBeenCalledWith("/");
     expect(filters.clearFilters).not.toHaveBeenCalled();
+    expect(handleClearSearch).not.toHaveBeenCalled();
   });
 
   it('si está en "/" y showFavorites=true, al click en favoritos NO hace nada', () => {
@@ -120,7 +132,7 @@ describe("Header", () => {
 
     render(<Header />);
 
-    const favBadge = screen.getByTitle("Ver todos"); // title cuando showFavorites=true
+    const favBadge = screen.getByTitle("Ver todos");
     expect(favBadge).toHaveAttribute("aria-label", "Ver todos los personajes");
     expect(favBadge).toHaveAttribute("aria-pressed", "true");
 
@@ -160,7 +172,7 @@ describe("Header", () => {
     expect(filters.setFavorites).not.toHaveBeenCalled();
   });
 
-  it('si NO está en "/" y showFavorites=true, al click en favoritos no cambia nada (no hay rama en el código)', () => {
+  it('si NO está en "/" y showFavorites=true, al click en favoritos no cambia nada', () => {
     const filters = makeUrlFilters({ showFavorites: true });
     (usePathname as jest.Mock).mockReturnValue("/character/123");
     (useUrlFilters as jest.Mock).mockReturnValue(filters);

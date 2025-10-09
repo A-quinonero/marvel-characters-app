@@ -1,8 +1,9 @@
+// src/components/ComicItem/ComicItem.test.tsx
 import { render, screen } from "@testing-library/react";
 import ComicItem from "./ComicItem";
 import type { Comic } from "@/types/comic";
+import { baseFromMarvel } from "@/lib/marvelImageLoader"; // 👈 importa el helper
 
-// Mock del formateador para control del output
 jest.mock("@/lib/utils/formatters", () => ({
   formatOnSaleDate: (iso?: string) => (iso ? "formatted-date" : ""),
 }));
@@ -18,9 +19,12 @@ describe("ComicItem", () => {
   it("renderiza portada, título y fecha formateada", () => {
     render(<ComicItem comic={comic} />);
 
-    // portada
-    const img = screen.getByRole("img", { name: comic.title });
-    expect(img).toHaveAttribute("src", comic.thumbnail);
+    // portada (src transformado por next/image + loader)
+    const img = screen.getByRole("img", { name: comic.title }) as HTMLImageElement;
+    const src = img.getAttribute("src")!;
+    // Debe partir del "base" y terminar con un variant portrait_*.ext
+    const base = baseFromMarvel(comic.thumbnail);
+    expect(src).toMatch(new RegExp(`^${base}/portrait_[^/]+\\.(jpg|jpeg|png|gif|webp|avif)$`));
 
     // título
     expect(screen.getByRole("heading", { name: comic.title })).toBeInTheDocument();
@@ -34,7 +38,6 @@ describe("ComicItem", () => {
 
   it("renderiza sin romper si no hay fecha", () => {
     render(<ComicItem comic={{ ...comic, onsaleDate: undefined }} />);
-    // No debería crashear y el título sigue visible
     expect(screen.getByRole("heading", { name: comic.title })).toBeInTheDocument();
   });
 });

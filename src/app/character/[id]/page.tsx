@@ -3,7 +3,7 @@ export const runtime = "nodejs";
 import { notFound } from "next/navigation";
 import CharacterDetailClient from "@/components/CharacterDetailClient/CharacterDetailClient";
 import type { MarvelCharacterDTO, MarvelComicDTO } from "@/types/api";
-import {  mapCharacter, mapComic, marvelFetch } from "@/app/api/marvel/_utils";
+import { mapCharacter, mapComic, marvelFetch } from "@/app/api/marvel/_utils";
 import { readFixture } from "@/lib/readFixture";
 
 type PageProps = { params: Promise<{ id: string }> };
@@ -14,14 +14,19 @@ export default async function CharacterDetailPage({ params }: PageProps) {
   if (!Number.isFinite(numericId)) notFound();
 
   if (process.env.MOCK_API === "1" || process.env.NEXT_PUBLIC_MOCK_API === "1") {
-    const all = await readFixture<Array<{
-      id: number; name: string; description: string; thumbnail: string;
-    }>>("characters.json");
+    const all = await readFixture<
+      Array<{
+        id: number;
+        name: string;
+        description: string;
+        thumbnail: string;
+      }>
+    >("characters.json");
 
     const character = all.find((c) => c.id === numericId) ?? null;
     if (!character) notFound();
 
-    let comics: Array<{ id:number; title:string; onsaleDate?:string; thumbnail:string }> = [];
+    let comics: Array<{ id: number; title: string; onsaleDate?: string; thumbnail: string }> = [];
     try {
       const obj = await readFixture<{ results?: typeof comics }>(`comics.${numericId}.json`);
       comics = obj.results ?? [];

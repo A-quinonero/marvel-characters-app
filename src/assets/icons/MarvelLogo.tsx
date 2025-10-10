@@ -1,6 +1,6 @@
 // src/assets/icons/MarvelLogo.tsx
 
-import React from 'react';
+import React from "react";
 
 // Le pasamos las props (...) para que pueda recibir atributos como 'className'
 const MarvelLogo = (props: React.SVGProps<SVGSVGElement>) => (

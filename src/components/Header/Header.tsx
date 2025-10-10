@@ -94,7 +94,7 @@ export default function Header() {
     } else {
       navigate("/");
     }
-  }, [pathname, clearFilters, navigate]);
+  }, [pathname, clearFilters, navigate, handleClearSearch]);
 
   const toggleFavorites = useCallback(() => {
     if (pathname === "/" && showFavorites) {

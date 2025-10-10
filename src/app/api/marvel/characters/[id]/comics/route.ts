@@ -6,7 +6,7 @@ type Params = { id: string };
 type Ctx = { params: Promise<Params> };
 
 export async function GET(_req: Request, ctx: Ctx) {
-  const { id } = await ctx.params;               // 👈 await aquí
+  const { id } = await ctx.params; // 👈 await aquí
   const numericId = Number(id);
   if (!Number.isFinite(numericId)) {
     return NextResponse.json({ error: "Invalid ID" }, { status: 400 });

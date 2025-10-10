@@ -28,7 +28,9 @@ export async function fetchCharacters(
   if (nameStartsWith) qs.set("nameStartsWith", nameStartsWith);
 
   // 2. Se antepone la URL base absoluta
-  const res = await fetch(`${ABSOLUTE_BASE}${API_ROUTE_BASE}/characters?${qs.toString()}`, { signal });
+  const res = await fetch(`${ABSOLUTE_BASE}${API_ROUTE_BASE}/characters?${qs.toString()}`, {
+    signal,
+  });
   if (!res.ok) throw new Error(`API error ${res.status}`);
   const json = await res.json();
   return json.results as Character[];

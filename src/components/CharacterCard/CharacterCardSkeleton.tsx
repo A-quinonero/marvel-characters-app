@@ -7,12 +7,7 @@ const Card = styled.article`
   display: flex;
   flex-direction: column;
   background: var(--skeleton-bg);
-  clip-path: polygon(
-    0% 0%, 100% 0%,
-    100% calc(100% - 12.86px),
-    calc(100% - 12.86px) 100%,
-    0% 100%
-  );
+  clip-path: polygon(0% 0%, 100% 0%, 100% calc(100% - 12.86px), calc(100% - 12.86px) 100%, 0% 100%);
 `;
 
 const ImgWrap = styled.div`

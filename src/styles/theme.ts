@@ -2,8 +2,6 @@
 
 import { AppTheme } from "@/types/theme";
 
-
-
 const theme: AppTheme = {
   colors: {
     primary: "#EC1D24",

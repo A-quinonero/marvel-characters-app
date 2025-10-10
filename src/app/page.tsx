@@ -6,8 +6,17 @@ import CharacterCardSkeleton from "@/components/CharacterCard/CharacterCardSkele
 
 function HomeFallback() {
   return (
-    <div style={{ padding: 24, display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(172px,1fr))", gap: 12 }}>
-      {Array.from({ length: 8 }).map((_, i) => <CharacterCardSkeleton key={i} />)}
+    <div
+      style={{
+        padding: 24,
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fill, minmax(172px,1fr))",
+        gap: 12,
+      }}
+    >
+      {Array.from({ length: 8 }).map((_, i) => (
+        <CharacterCardSkeleton key={i} />
+      ))}
     </div>
   );
 }
@@ -18,7 +27,7 @@ export default async function HomePage() {
     offset: 0,
     orderBy: "name",
   });
-  const initial = data.results.map(mapCharacter );
+  const initial = data.results.map(mapCharacter);
 
   return (
     <Suspense fallback={<HomeFallback />}>

@@ -1,38 +1,40 @@
-// src/components/ComicItem/ComicItem.test.tsx
+/* eslint-disable @next/next/no-img-element */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { render, screen } from "@testing-library/react";
 import ComicItem from "./ComicItem";
 import type { Comic } from "@/types/comic";
-import { baseFromMarvel } from "@/lib/marvelImageLoader"; // 👈 importa el helper
 
 jest.mock("@/lib/utils/formatters", () => ({
   formatOnSaleDate: (iso?: string) => (iso ? "formatted-date" : ""),
+}));
+
+jest.mock("next/image", () => ({
+  __esModule: true,
+  default: (props: any) => {
+    const { src, alt, loader, quality = 70 } = props;
+    const srcStr = typeof src === "string" ? src : (src?.src ?? "");
+    const computed = loader ? loader({ src: srcStr, width: 200, quality }) : srcStr;
+    return <img src={computed} alt={alt} />;
+  },
 }));
 
 describe("ComicItem", () => {
   const comic: Comic = {
     id: 99,
     title: "The Amazing Test-Man",
-    thumbnail: "https://example.com/test.jpg",
+    thumbnail: "https://example.com/test/portrait_medium.jpg",
     onsaleDate: "2022-12-31T00:00:00.000Z",
   };
 
   it("renderiza portada, título y fecha formateada", () => {
     render(<ComicItem comic={comic} />);
 
-    // portada (src transformado por next/image + loader)
     const img = screen.getByRole("img", { name: comic.title }) as HTMLImageElement;
-    const src = img.getAttribute("src")!;
-    // Debe partir del "base" y terminar con un variant portrait_*.ext
-    const base = baseFromMarvel(comic.thumbnail);
-    expect(src).toMatch(new RegExp(`^${base}/portrait_[^/]+\\.(jpg|jpeg|png|gif|webp|avif)$`));
+    expect(img).toHaveAttribute("src", "https://example.com/test/portrait_incredible.jpg");
 
-    // título
     expect(screen.getByRole("heading", { name: comic.title })).toBeInTheDocument();
-
-    // fecha formateada
     expect(screen.getByText("formatted-date")).toBeInTheDocument();
-
-    // aria-label en el item
     expect(screen.getByLabelText(comic.title)).toBeInTheDocument();
   });
 

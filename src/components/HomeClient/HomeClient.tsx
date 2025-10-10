@@ -97,15 +97,13 @@ export default function HomeClient({ initialData }: Props) {
   return (
     <Main>
       {showFavorites && (
-        <TitleContainer><Title>Favorites</Title></TitleContainer>
+        <TitleContainer>
+          <Title>Favorites</Title>
+        </TitleContainer>
       )}
 
       <SearchContainer>
-        <SearchBar
-          value={searchTerm}
-          onChange={handleSearch}
-          onClear={handleClearSearch}
-        />
+        <SearchBar value={searchTerm} onChange={handleSearch} onClear={handleClearSearch} />
         <Counter>{counterLabel}</Counter>
       </SearchContainer>
 

@@ -24,17 +24,14 @@ export function toHttps(url?: string | null): string {
 
 // src/app/api/marvel/_utils.ts
 export function mapCharacter(dto: MarvelCharacterDTO): Character {
-  const fallback = dto.thumbnail
-    ? `${dto.thumbnail.path}/standard_fantastic.${dto.thumbnail.extension}`
-    : '';
+  const fallback = dto.thumbnail ? `${dto.thumbnail.path}.${dto.thumbnail.extension}` : "";
   return {
     id: dto.id,
     name: dto.name,
-    description: dto.description ?? '',
+    description: dto.description ?? "",
     thumbnail: toHttps(fallback), // El loader calculará el variant óptimo
   };
 }
-
 
 function toIsoIfValid(raw?: string | null): string | undefined {
   if (!raw) return undefined;
@@ -43,13 +40,20 @@ function toIsoIfValid(raw?: string | null): string | undefined {
 }
 export function mapComic(dto: MarvelComicDTO): Comic {
   const dates = dto.dates ?? [];
-  const get = (type: string) => dates.find(d => d.type === type)?.date;
-  const candidates = [get("onsaleDate"), get("focDate"), get("unlimitedDate"), get("digitalPurchaseDate")];
-  const firstValidIso = candidates.map(toIsoIfValid).find((iso): iso is string => iso !== undefined);
+  const get = (type: string) => dates.find((d) => d.type === type)?.date;
+  const candidates = [
+    get("onsaleDate"),
+    get("focDate"),
+    get("unlimitedDate"),
+    get("digitalPurchaseDate"),
+  ];
+  const firstValidIso = candidates
+    .map(toIsoIfValid)
+    .find((iso): iso is string => iso !== undefined);
 
   const base = dto.thumbnail ? `${dto.thumbnail.path}` : "";
   const ext = dto.thumbnail?.extension ?? "jpg";
-  const withVariant = base ? `${base}/portrait_medium.${ext}` : "";
+  const withVariant = base ? `${base}.${ext}` : "";
 
   return {
     id: dto.id,

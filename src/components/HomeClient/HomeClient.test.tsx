@@ -43,14 +43,7 @@ jest.mock("@/components/SearchBar/SearchBar", () => ({
 // Mock de CharacterCard: pinta un <article> con el nombre
 jest.mock("@/components/CharacterCard/CharacterCard", () => ({
   __esModule: true,
-  default: ({
-    id,
-    name,
-  }: {
-    id: number;
-    name: string;
-    thumbnail: string;
-  }) => (
+  default: ({ id, name }: { id: number; name: string; thumbnail: string }) => (
     <article data-testid="character-card" data-id={id}>
       {name}
     </article>
@@ -64,9 +57,7 @@ jest.mock("@/components/CharacterCard/CharacterCardSkeleton", () => ({
 }));
 
 // Helpers para acceder a los mocks tipados
-const { useCharactersContext } = jest.requireMock(
-  "@/context/CharactersProvider"
-);
+const { useCharactersContext } = jest.requireMock("@/context/CharactersProvider");
 const { useSearch } = jest.requireMock("@/hooks/useSearch");
 
 // ──────────────────────────
@@ -103,9 +94,7 @@ const makeUseCharactersContextReturn = () => {
 describe("HomeClient", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    (useCharactersContext as jest.Mock).mockReturnValue(
-      makeUseCharactersContextReturn()
-    );
+    (useCharactersContext as jest.Mock).mockReturnValue(makeUseCharactersContextReturn());
     (useSearch as jest.Mock).mockReturnValue(makeUseSearchReturn());
   });
 

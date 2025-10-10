@@ -21,14 +21,14 @@ export function charactersReducer(
         initialCharacters: action.payload, // 👈 Guarda la copia de seguridad
         loading: false,
       };
-    
+
     // Esta acción ahora solo actualiza los resultados de búsqueda
     case "SET_CHARACTERS":
-      return { 
-        ...state, 
-        characters: action.payload, 
-        loading: false, 
-        error: undefined 
+      return {
+        ...state,
+        characters: action.payload,
+        loading: false,
+        error: undefined,
       };
 
     // Esta acción restaura la lista inicial
@@ -37,7 +37,7 @@ export function charactersReducer(
         ...state,
         characters: state.initialCharacters,
         query: "",
-      }
+      };
 
     case "SET_LOADING":
       return { ...state, loading: action.payload };
@@ -47,7 +47,7 @@ export function charactersReducer(
 
     case "SET_ERROR":
       return { ...state, error: action.payload, loading: false };
-      
+
     default:
       return state;
   }

@@ -15,9 +15,7 @@ describe("formatOnSaleDate", () => {
 
   it("con iso válido formatea usando toLocaleDateString con las opciones esperadas y devuelve su valor", () => {
     // Mock determinista del formateo
-    const spy = jest
-      .spyOn(Date.prototype, "toLocaleDateString")
-      .mockReturnValue("02 ene 2020");
+    const spy = jest.spyOn(Date.prototype, "toLocaleDateString").mockReturnValue("02 ene 2020");
 
     const result = formatOnSaleDate("2020-01-02T00:00:00.000Z");
 

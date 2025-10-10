@@ -7,9 +7,9 @@ import { useFavorites } from "./useFavorites";
 jest.mock("@/context/FavoritesProvider", () => ({
   useFavoritesContext: jest.fn(),
 }));
-const { useFavoritesContext } = jest.requireMock(
-  "@/context/FavoritesProvider"
-) as { useFavoritesContext: jest.Mock };
+const { useFavoritesContext } = jest.requireMock("@/context/FavoritesProvider") as {
+  useFavoritesContext: jest.Mock;
+};
 
 // Tipo local para el test
 type FavoriteCharacter = { id: number; name: string; thumbnail: string };
@@ -18,7 +18,7 @@ const Harness = ({ probeId }: { probeId: number }) => {
   const { favorites, count, isFavorite, addFavorite, removeFavorite } = useFavorites();
   return (
     <div>
-      <div data-testid="names">{favorites.map(f => f.name).join(",")}</div>
+      <div data-testid="names">{favorites.map((f) => f.name).join(",")}</div>
       <div data-testid="count">{String(count)}</div>
       <div data-testid="probe">{String(isFavorite(probeId))}</div>
       <button

@@ -23,7 +23,8 @@
     "jest.setup.ts",
     "jest.config.cjss",
     ".next/types/**/*.ts",
-    "src/styles/styled.d.ts"
+    "src/styles/styled.d.ts",
+    "next.config.ts"
   ],
   "exclude": ["node_modules"]
 }

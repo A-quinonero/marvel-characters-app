@@ -1,6 +1,14 @@
 "use client";
 
-import { createContext, useState, useContext, ReactNode, useCallback, useMemo, useRef } from "react";
+import {
+  createContext,
+  useState,
+  useContext,
+  ReactNode,
+  useCallback,
+  useMemo,
+  useRef,
+} from "react";
 
 type LoaderContextType = {
   showLoader: () => void;
@@ -27,24 +35,29 @@ export function LoaderProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const withLoader = useCallback(async <T,>(op: () => Promise<T>): Promise<T> => {
-    showLoader();
-    try {
-      return await op();
-    } finally {
-      hideLoader();
-    }
-  }, [showLoader, hideLoader]);
-
-  const value = useMemo<LoaderContextType>(() => ({
-    showLoader, hideLoader, withLoader, isLoading
-  }), [showLoader, hideLoader, withLoader, isLoading]);
-
-  return (
-    <LoaderContext.Provider value={value}>
-      {children}
-    </LoaderContext.Provider>
+  const withLoader = useCallback(
+    async <T,>(op: () => Promise<T>): Promise<T> => {
+      showLoader();
+      try {
+        return await op();
+      } finally {
+        hideLoader();
+      }
+    },
+    [showLoader, hideLoader]
   );
+
+  const value = useMemo<LoaderContextType>(
+    () => ({
+      showLoader,
+      hideLoader,
+      withLoader,
+      isLoading,
+    }),
+    [showLoader, hideLoader, withLoader, isLoading]
+  );
+
+  return <LoaderContext.Provider value={value}>{children}</LoaderContext.Provider>;
 }
 
 export function useLoader() {

@@ -4,9 +4,8 @@ import { memo } from "react";
 import styled from "styled-components";
 import type { Comic } from "@/types/comic";
 import { formatOnSaleDate } from "@/lib/utils/formatters";
-import { portraitSrcSet } from "@/lib/images";
 import Image from "next/image";
-import { marvelPortraitLoader, baseFromMarvel } from "@/lib/marvelImageLoader";
+import { marvelPortraitLoader } from "@/lib/marvelImageLoader";
 
 const mobileBreakpoint = "768px";
 

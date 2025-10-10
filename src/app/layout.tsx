@@ -30,7 +30,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <Suspense fallback={null}>
                 <Header />
               </Suspense>
-                <HeaderSpacer/>
+              <HeaderSpacer />
               {children}
             </LoaderProvider>
           </ClientProviders>

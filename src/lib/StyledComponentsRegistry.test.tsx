@@ -13,11 +13,7 @@ jest.mock("styled-components", () => {
   const ReactActual = require("react"); // sólo para crear <style> en el mock
   const clearTagSpy = jest.fn();
   const getStyleElementSpy = jest.fn(() => [
-    ReactActual.createElement(
-      "style",
-      { key: "1", "data-testid": "sc-style" },
-      ".x{}"
-    ),
+    ReactActual.createElement("style", { key: "1", "data-testid": "sc-style" }, ".x{}"),
   ]);
 
   class MockServerStyleSheet {
@@ -25,12 +21,8 @@ jest.mock("styled-components", () => {
     public getStyleElement = getStyleElementSpy;
   }
 
-  const MockStyleSheetManager = ({
-    children,
-  }: {
-    children: React.ReactNode;
-    sheet?: unknown;
-  }) => ReactActual.createElement("div", { "data-testid": "sc-manager" }, children);
+  const MockStyleSheetManager = ({ children }: { children: React.ReactNode; sheet?: unknown }) =>
+    ReactActual.createElement("div", { "data-testid": "sc-manager" }, children);
 
   return {
     __esModule: true,

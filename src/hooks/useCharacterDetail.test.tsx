@@ -30,13 +30,7 @@ type Comic = {
 
 // Harness para consumir el hook en un componente
 type HarnessRef = { toggle: () => void };
-function HarnessUI({
-  favorite,
-  sortedComics,
-}: {
-  favorite: boolean;
-  sortedComics: Comic[];
-}) {
+function HarnessUI({ favorite, sortedComics }: { favorite: boolean; sortedComics: Comic[] }) {
   return (
     <div>
       <span data-testid="favorite">{String(favorite)}</span>
@@ -49,21 +43,17 @@ function HarnessUI({
   );
 }
 
-const Harness = forwardRef<
-  HarnessRef,
-  { character: Character | null; comics?: Comic[] }
->(({ character, comics }, ref) => {
-  const { favorite, toggleFavorite, sortedComics } = useCharacterDetail(
-    character,
-    comics
-  );
+const Harness = forwardRef<HarnessRef, { character: Character | null; comics?: Comic[] }>(
+  ({ character, comics }, ref) => {
+    const { favorite, toggleFavorite, sortedComics } = useCharacterDetail(character, comics);
 
-  useImperativeHandle(ref, () => ({
-    toggle: toggleFavorite,
-  }));
+    useImperativeHandle(ref, () => ({
+      toggle: toggleFavorite,
+    }));
 
-  return <HarnessUI favorite={favorite} sortedComics={sortedComics} />;
-});
+    return <HarnessUI favorite={favorite} sortedComics={sortedComics} />;
+  }
+);
 Harness.displayName = "Harness";
 
 // Helpers
@@ -154,15 +144,11 @@ describe("useCharacterDetail", () => {
     render(<Harness ref={ref} character={IRON} comics={input} />);
 
     // Orden esperado: sin fecha (id:1) → 2020 (id:2) → 2021 (id:3)
-    const sortedLi = screen
-      .getAllByRole("listitem")
-      .map((li) => Number(li.textContent));
+    const sortedLi = screen.getAllByRole("listitem").map((li) => Number(li.textContent));
 
     expect(sortedLi).toEqual([1, 2, 3]);
 
     // El array original debe permanecer en el mismo orden en que lo pasamos
-    expect(input.map((c) => c.id)).toEqual(
-      comicsUnsorted.map((c) => c.id)
-    );
+    expect(input.map((c) => c.id)).toEqual(comicsUnsorted.map((c) => c.id));
   });
 });

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import {  mapCharacter, marvelFetch } from "@/app/api/marvel/_utils";
+import { mapCharacter, marvelFetch } from "@/app/api/marvel/_utils";
 import { MarvelCharacterDTO } from "@/types/api";
 
 export async function GET(request: Request) {
@@ -15,6 +15,6 @@ export async function GET(request: Request) {
     nameStartsWith,
   });
 
-  const results = data.results.map(mapCharacter )
+  const results = data.results.map(mapCharacter);
   return NextResponse.json({ total: data.total, count: data.count, results });
 }

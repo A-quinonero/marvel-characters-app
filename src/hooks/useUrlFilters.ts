@@ -15,7 +15,6 @@ export function useUrlFilters() {
   const q = params.get("q") ?? "";
   const paramsKey = params.toString();
 
-  
   const buildUrl = useCallback(
     (patch: Record<string, string | undefined>) => {
       const sp = new URLSearchParams(params.toString());
@@ -62,24 +61,33 @@ export function useUrlFilters() {
   );
 
   const buildUrlAt = useCallback(
-  (basePath: string, patch: Record<string, string | undefined>) => {
-    const sp = new URLSearchParams(params.toString());
-    for (const [k, v] of Object.entries(patch)) {
-      if (v === undefined || v === "") sp.delete(k);
-      else sp.set(k, v);
-    }
-    const qs = sp.toString();
-    return qs ? `${basePath}?${qs}` : basePath;
-  },
-  [params]
-);
+    (basePath: string, patch: Record<string, string | undefined>) => {
+      const sp = new URLSearchParams(params.toString());
+      for (const [k, v] of Object.entries(patch)) {
+        if (v === undefined || v === "") sp.delete(k);
+        else sp.set(k, v);
+      }
+      const qs = sp.toString();
+      return qs ? `${basePath}?${qs}` : basePath;
+    },
+    [params]
+  );
 
-const setFavoritesAt = useCallback(
-  (on: boolean, basePath = pathname) => {
-    navigate(buildUrlAt(basePath, { favorites: on ? "1" : undefined }));
-  },
-  [navigate, buildUrlAt, pathname]
-);
+  const setFavoritesAt = useCallback(
+    (on: boolean, basePath = pathname) => {
+      navigate(buildUrlAt(basePath, { favorites: on ? "1" : undefined }));
+    },
+    [navigate, buildUrlAt, pathname]
+  );
 
-  return { showFavorites, q, clearFilters, setFavorites, setQuery, isPending, navigate, setFavoritesAt };
+  return {
+    showFavorites,
+    q,
+    clearFilters,
+    setFavorites,
+    setQuery,
+    isPending,
+    navigate,
+    setFavoritesAt,
+  };
 }

@@ -8,7 +8,7 @@ import TransitionLink from "@/components/TransitionLink/TransitionLink";
 import { useFavorites } from "@/hooks/useFavorites";
 import HeartIcon from "@/assets/icons/HeartIcon";
 import EmptyHeartIcon from "@/assets/icons/EmptyHeartIcon";
-import { marvelSquareLoader, baseFromMarvel } from "@/lib/marvelImageLoader";
+import { marvelSquareLoader } from "@/lib/marvelImageLoader";
 
 const ImgWrap = styled.div`
   position: relative; /* necesario para fill */

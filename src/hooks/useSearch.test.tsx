@@ -21,8 +21,9 @@ jest.mock("@/hooks/useFavorites", () => ({
 // Mock de lodash.debounce para usar timers de Jest de forma fiable
 // ⬇️ Sustituye tu jest.mock("lodash.debounce", ...) por esto
 jest.mock("lodash.debounce", () => {
-  type Debounced<T extends (...args: unknown[]) => unknown> =
-    ((...args: Parameters<T>) => void) & { cancel: () => void };
+  type Debounced<T extends (...args: unknown[]) => unknown> = ((...args: Parameters<T>) => void) & {
+    cancel: () => void;
+  };
 
   const debounce = <T extends (...args: unknown[]) => unknown>(
     fn: T,
@@ -180,7 +181,10 @@ describe("useSearch", () => {
   });
 
   it("handleClearSearch cancela el debounce y llama clearSearch inmediatamente", () => {
-    const ctx = makeCharsCtx({ search: jest.fn().mockResolvedValue(undefined), clearSearch: jest.fn() });
+    const ctx = makeCharsCtx({
+      search: jest.fn().mockResolvedValue(undefined),
+      clearSearch: jest.fn(),
+    });
     (useCharactersContext as jest.Mock).mockReturnValue(ctx);
 
     render(<Harness />);
@@ -200,7 +204,7 @@ describe("useSearch", () => {
     expect(screen.getByTestId("term").textContent).toBe(""); // term limpiado
   });
 
- it("modo favoritos: no ejecuta search/clear tras escribir; filtra localmente; etiqueta siempre 'Result(s)'; isSearching=false", () => {
+  it("modo favoritos: no ejecuta search/clear tras escribir; filtra localmente; etiqueta siempre 'Result(s)'; isSearching=false", () => {
     (useSearchParams as jest.Mock).mockReturnValue(makeParams("1"));
 
     // Simulamos loading=true en el contexto; isSearching debe seguir false (porque showFavorites=true)
@@ -235,7 +239,9 @@ describe("useSearch", () => {
     // no favoritos
     (useSearchParams as jest.Mock).mockReturnValue(makeParams("0"));
 
-    (useCharactersContext as jest.Mock).mockReturnValue(makeCharsCtx({ loading: true, characters: chars }));
+    (useCharactersContext as jest.Mock).mockReturnValue(
+      makeCharsCtx({ loading: true, characters: chars })
+    );
     render(<Harness />);
 
     expect(screen.getByTestId("showFav").textContent).toBe("false");

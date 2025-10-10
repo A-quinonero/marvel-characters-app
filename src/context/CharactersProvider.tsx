@@ -75,15 +75,18 @@ export const CharactersProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     dispatch({ type: "RESTORE_INITIAL" });
   }, []);
 
-  const value = useMemo<Ctx>(() => ({
-    characters: state.characters,
-    loading: state.loading,
-    query: state.query,
-    error: state.error,
-    search,
-    clearSearch,
-    initializeCharacters,
-  }), [state, search, clearSearch, initializeCharacters]);
+  const value = useMemo<Ctx>(
+    () => ({
+      characters: state.characters,
+      loading: state.loading,
+      query: state.query,
+      error: state.error,
+      search,
+      clearSearch,
+      initializeCharacters,
+    }),
+    [state, search, clearSearch, initializeCharacters]
+  );
 
   return <CharactersContext.Provider value={value}>{children}</CharactersContext.Provider>;
 };

@@ -10,9 +10,7 @@ import type { Comic } from "@/types/comic";
 // Así comprobamos fácilmente la cantidad y el contenido.
 jest.mock("@/components/ComicItem/ComicItem", () => ({
   __esModule: true,
-  default: ({ comic }: { comic: Comic }) => (
-    <li data-testid="comic-item">{comic.title}</li>
-  ),
+  default: ({ comic }: { comic: Comic }) => <li data-testid="comic-item">{comic.title}</li>,
 }));
 
 const makeComic = (overrides: Partial<Comic> = {}): Comic => ({
@@ -60,11 +58,7 @@ describe("ComicsList", () => {
     render(<ComicsList comics={comics} />);
 
     const items = screen.getAllByTestId("comic-item");
-    expect(items.map((el) => el.textContent)).toEqual([
-      "Primero",
-      "Segundo",
-      "Tercero",
-    ]);
+    expect(items.map((el) => el.textContent)).toEqual(["Primero", "Segundo", "Tercero"]);
   });
 
   it("muestra un mensaje accesible cuando no hay cómics", () => {

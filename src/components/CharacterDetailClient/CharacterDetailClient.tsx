@@ -10,7 +10,7 @@ import HeartIcon from "@/assets/icons/HeartIcon";
 import EmptyHeartIconDetailCharacter from "@/assets/icons/EmptyHeartIconDetailCharacter";
 import ComicsListSkeleton from "../ComicsList/ComicsListSkeleton";
 import Image from "next/image";
-import { baseFromMarvel, marvelSquareLoader } from "@/lib/marvelImageLoader";
+import { marvelFullSize } from "@/lib/marvelImageLoader";
 
 const fadeInFromAbove = keyframes`
   from { opacity: 0; transform: translateY(-20px); }
@@ -152,7 +152,7 @@ export default function CharacterDetailClient({ character, comicsPromise }: Prop
       <CharacterResume>
         <CharacterContent>
           <CharacterPhoto
-            loader={marvelSquareLoader}
+            loader={marvelFullSize}
             src={character.thumbnail}
             alt={character.name}
             width={320}

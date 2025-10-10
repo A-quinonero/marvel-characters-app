@@ -16,17 +16,17 @@ export function useCharacterDetail(character: Character | null, comics?: Comic[]
     if (favorite) {
       removeFavorite(character.id);
     } else {
-      addFavorite({ 
-        id: character.id, 
-        name: character.name, 
-        thumbnail: character.thumbnail 
+      addFavorite({
+        id: character.id,
+        name: character.name,
+        thumbnail: character.thumbnail,
       });
     }
   }, [favorite, character, addFavorite, removeFavorite]);
 
   const sortedComics = useMemo(() => {
     if (!comics) return [];
-    
+
     return [...comics].sort((a, b) => {
       const da = a.onsaleDate ? Date.parse(a.onsaleDate) : 0;
       const db = b.onsaleDate ? Date.parse(b.onsaleDate) : 0;

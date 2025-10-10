@@ -7,9 +7,9 @@ import { useCharacters } from "./useCharacters";
 jest.mock("@/context/CharactersProvider", () => ({
   useCharactersContext: jest.fn(),
 }));
-const { useCharactersContext } = jest.requireMock(
-  "@/context/CharactersProvider"
-) as { useCharactersContext: jest.Mock };
+const { useCharactersContext } = jest.requireMock("@/context/CharactersProvider") as {
+  useCharactersContext: jest.Mock;
+};
 
 // Tipos locales para el test (evita dependencias externas)
 type Character = { id: number; name: string; thumbnail: string; description?: string };

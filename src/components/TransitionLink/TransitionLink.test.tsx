@@ -3,7 +3,6 @@ import { render, screen, fireEvent, act } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import TransitionLink from "./TransitionLink";
 
-
 jest.mock("next/navigation", () => ({
   useRouter: jest.fn(),
 }));
@@ -21,11 +20,7 @@ jest.mock("next/link", () => ({
     onClick?: React.MouseEventHandler<HTMLAnchorElement>;
     children: React.ReactNode;
   }) => (
-    <a
-      href={typeof href === "string" ? href : href?.pathname}
-      onClick={onClick}
-      {...rest}
-    >
+    <a href={typeof href === "string" ? href : href?.pathname} onClick={onClick} {...rest}>
       {children}
     </a>
   ),

@@ -15,7 +15,13 @@ jest.mock("@/hooks/useFavorites", () => ({
 
 // ✅ Mock de TransitionLink para evitar useRouter
 jest.mock("@/components/TransitionLink/TransitionLink", () => {
-  return function MockTransitionLink({ href, children }: { href: string; children: React.ReactNode }) {
+  return function MockTransitionLink({
+    href,
+    children,
+  }: {
+    href: string;
+    children: React.ReactNode;
+  }) {
     return <a href={href}>{children}</a>;
   };
 });

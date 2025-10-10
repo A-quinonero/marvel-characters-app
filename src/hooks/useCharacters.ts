@@ -8,6 +8,6 @@ export function useCharacters() {
     query: ctx.query,
     error: ctx.error,
     search: ctx.search,
-    clearSearch:ctx.clearSearch
+    clearSearch: ctx.clearSearch,
   };
 }

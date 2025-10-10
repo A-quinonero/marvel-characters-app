@@ -27,9 +27,7 @@ const TestConsumer = forwardRef<HarnessRef>((_props, ref) => {
 
   return (
     <div>
-      <div data-testid="names">
-        {ctx.state.favorites.map((f) => f.name).join(",")}
-      </div>
+      <div data-testid="names">{ctx.state.favorites.map((f) => f.name).join(",")}</div>
       <div data-testid="count">{String(ctx.state.favorites.length)}</div>
     </div>
   );
@@ -56,7 +54,9 @@ describe("FavoritesProvider", () => {
     // No necesitamos capturar `ref` aquí
     setup();
 
-    await act(async () => { await Promise.resolve(); });
+    await act(async () => {
+      await Promise.resolve();
+    });
 
     expect(screen.getByTestId("names").textContent).toBe("Iron Man,Thor");
     expect(screen.getByTestId("count").textContent).toBe("2");
@@ -71,7 +71,9 @@ describe("FavoritesProvider", () => {
     localStorage.setItem("favorites", "not-json");
 
     setup();
-    await act(async () => { await Promise.resolve(); });
+    await act(async () => {
+      await Promise.resolve();
+    });
 
     expect(screen.getByTestId("names").textContent).toBe("");
     expect(screen.getByTestId("count").textContent).toBe("0");
@@ -80,7 +82,9 @@ describe("FavoritesProvider", () => {
 
   it("addFavorite añade y persiste; removeFavorite elimina y persiste", async () => {
     const ref = setup();
-    await act(async () => { await Promise.resolve(); });
+    await act(async () => {
+      await Promise.resolve();
+    });
 
     await act(async () => {
       ref.current!.add(favA);

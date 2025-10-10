@@ -1,7 +1,4 @@
-import React, {
-  forwardRef,
-  useImperativeHandle,
-} from "react";
+import React, { forwardRef, useImperativeHandle } from "react";
 import { render, screen, act } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { CharactersProvider, useCharactersContext } from "./CharactersProvider";
@@ -21,30 +18,28 @@ type PendingCall = {
 const pendingCalls: PendingCall[] = [];
 
 jest.mock("@/lib/api/marvel", () => ({
-  fetchCharacters: jest.fn(
-    (q: string, _limit: number, _offset: number, signal?: AbortSignal) => {
-      let resolve!: (v: Character[]) => void;
-      let reject!: (e: unknown) => void;
-      const promise = new Promise<Character[]>((res, rej) => {
-        resolve = res;
-        reject = rej;
-      });
+  fetchCharacters: jest.fn((q: string, _limit: number, _offset: number, signal?: AbortSignal) => {
+    let resolve!: (v: Character[]) => void;
+    let reject!: (e: unknown) => void;
+    const promise = new Promise<Character[]>((res, rej) => {
+      resolve = res;
+      reject = rej;
+    });
 
-      // Si se aborta la señal, rechazamos como en fetch real
-      if (signal) {
-        if (signal.aborted) {
-          reject(new DOMException("Aborted", "AbortError"));
-        } else {
-          const onAbort = () => reject(new DOMException("Aborted", "AbortError"));
-          signal.addEventListener("abort", onAbort, { once: true });
-        }
+    // Si se aborta la señal, rechazamos como en fetch real
+    if (signal) {
+      if (signal.aborted) {
+        reject(new DOMException("Aborted", "AbortError"));
+      } else {
+        const onAbort = () => reject(new DOMException("Aborted", "AbortError"));
+        signal.addEventListener("abort", onAbort, { once: true });
       }
-
-      const call: PendingCall = { q, signal, resolve, reject, promise };
-      pendingCalls.push(call);
-      return promise;
     }
-  ),
+
+    const call: PendingCall = { q, signal, resolve, reject, promise };
+    pendingCalls.push(call);
+    return promise;
+  }),
 }));
 
 const { fetchCharacters } = jest.requireMock("@/lib/api/marvel");
@@ -69,9 +64,7 @@ const TestConsumer = forwardRef<HarnessRef>((_props, ref) => {
 
   return (
     <div>
-      <div data-testid="names">
-        {ctx.characters.map((c) => c.name).join(",")}
-      </div>
+      <div data-testid="names">{ctx.characters.map((c) => c.name).join(",")}</div>
       <div data-testid="loading">{String(ctx.loading)}</div>
       <div data-testid="query">{ctx.query}</div>
       <div data-testid="error">{ctx.error ?? ""}</div>
@@ -246,9 +239,7 @@ describe("CharactersProvider", () => {
     const ref = setup();
 
     // Para esta llamada, sobreescribimos el mock a rejetar con error normal
-    (fetchCharacters as jest.Mock).mockImplementationOnce(() =>
-      Promise.reject(new Error("boom"))
-    );
+    (fetchCharacters as jest.Mock).mockImplementationOnce(() => Promise.reject(new Error("boom")));
 
     await act(async () => {
       await ref.current!.search("failcase");

@@ -19,7 +19,7 @@ const finishing = keyframes`
 
 const Bar = styled.div<{ $isFinishing: boolean }>`
   position: absolute;
-  left: 0;               /* anclada a la izquierda */
+  left: 0; /* anclada a la izquierda */
   bottom: 0;
   height: var(--progressbar-height, 3px);
   background: var(--progressbar-color, #ec1d24);
@@ -30,8 +30,12 @@ const Bar = styled.div<{ $isFinishing: boolean }>`
   /* Animación controlada por estado + variables */
   animation: ${({ $isFinishing }) =>
     $isFinishing
-      ? css`${finishing} var(--progressbar-finishing-dur, 0.5s) ease-out forwards`
-      : css`${loading} var(--progressbar-loading-dur, 4s) cubic-bezier(0, 0.5, 0, 1) forwards`};
+      ? css`
+          ${finishing} var(--progressbar-finishing-dur, 0.5s) ease-out forwards
+        `
+      : css`
+          ${loading} var(--progressbar-loading-dur, 4s) cubic-bezier(0, 0.5, 0, 1) forwards
+        `};
 
   @media (prefers-reduced-motion: reduce) {
     animation-duration: 0.01ms !important;

@@ -128,8 +128,6 @@ describe("LoaderProvider", () => {
       useLoader();
       return null;
     };
-    expect(() => render(<Bad />)).toThrow(
-      "useLoader must be used within a LoaderProvider"
-    );
+    expect(() => render(<Bad />)).toThrow("useLoader must be used within a LoaderProvider");
   });
 });

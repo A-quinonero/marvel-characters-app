@@ -57,12 +57,7 @@ it("muestra un estado de carga y luego la lista de cómics", async () => {
 
   // Render dentro de act para cubrir la suspensión inicial
   await act(async () => {
-    render(
-      <CharacterDetailClient
-        character={character}
-        comicsPromise={comicsDef.promise}
-      />
-    );
+    render(<CharacterDetailClient character={character} comicsPromise={comicsDef.promise} />);
   });
 
   // Esperamos al fallback de carga (puede aparecer en un tick async)

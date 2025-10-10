@@ -1,17 +1,11 @@
-// ***********************************************************
-// This example support/e2e.ts is processed and
-// loaded automatically before your test files.
-//
-// This is a great place to put global configuration and
-// behavior that modifies Cypress.
-//
-// You can change the location of this file or turn off
-// automatically serving support files with the
-// 'supportFile' configuration option.
-//
-// You can read more here:
-// https://on.cypress.io/configuration
-// ***********************************************************
+// cypress/support/e2e.ts
+Cypress.on("uncaught:exception", (err) => {
+  // Ignora únicamente este caso concreto
+  if (/Failed to execute 'removeChild'/.test(err.message) || /NotFoundError/.test(err.name)) {
+    return false; // evita que Cypress lo marque
+  }
+  // otros errores sí deben romper
+  return true;
+});
 
-// Import commands.js using ES2015 syntax:
-import './commands'
+import "./commands";

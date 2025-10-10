@@ -20,7 +20,7 @@ export function useSearch() {
   const showFavorites = params.get("favorites") === "1";
 
   const [searchTerm, setSearchTerm] = useState<string>(query ?? "");
-  
+
   useEffect(() => {
     if (!showFavorites) setSearchTerm(query);
   }, [query, showFavorites]);
@@ -40,12 +40,19 @@ export function useSearch() {
   }, [search, clearSearch]);
 
   const lastTermRef = useRef<string>("");
+  const handleClearSearch = useCallback(() => {
+    setSearchTerm("");
+    debouncedRef.current?.cancel();
+    lastTermRef.current = "";
+    clearSearch();
+  }, [clearSearch]);
 
   useEffect(() => {
     if (showFavorites) {
       handleClearSearch();
-      debouncedRef.current?.cancel()};
-  }, [showFavorites]);
+      debouncedRef.current?.cancel();
+    }
+  }, [showFavorites, handleClearSearch]);
 
   const handleSearch = useCallback(
     (value: string) => {
@@ -78,15 +85,8 @@ export function useSearch() {
     [showFavorites, clearSearch]
   );
 
-  const handleClearSearch = useCallback(() => {
-    setSearchTerm("");
-    debouncedRef.current?.cancel();
-    lastTermRef.current = "";
-    clearSearch();
-  }, [clearSearch]);
-
   const results = useMemo<Character[]>(() => {
-    if (showFavorites) { 
+    if (showFavorites) {
       const norm = searchTerm.toLowerCase().trim();
       return norm ? favorites.filter((f) => f.name.toLowerCase().includes(norm)) : favorites;
     }

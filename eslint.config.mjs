@@ -5,17 +5,11 @@ import nextPlugin from "@next/eslint-plugin-next";
 import reactHooksPlugin from "eslint-plugin-react-hooks";
 import jsxA11yPlugin from "eslint-plugin-jsx-a11y";
 import prettierConfig from "eslint-config-prettier";
-import cypressPlugin from "eslint-plugin-cypress"; // ⬅️ NUEVO
+import cypressPlugin from "eslint-plugin-cypress";
 
 const eslintConfig = [
   {
-    ignores: [
-      "node_modules/**",
-      ".next/**",
-      "out/**",
-      "build/**",
-      "next-env.d.ts",
-    ],
+    ignores: ["node_modules/**", ".next/**", "out/**", "build/**", "next-env.d.ts"],
   },
 
   {
@@ -32,7 +26,6 @@ const eslintConfig = [
     rules: {},
   },
 
-  // Bloque TS general (ignora Cypress para que no use tsconfig.json)
   {
     files: ["**/*.{ts,tsx}"],
     ignores: ["cypress/**", "cypress.config.ts"], // ⬅️ NUEVO
@@ -70,10 +63,8 @@ const eslintConfig = [
       react: { version: "detect" },
     },
   },
-
-  // 🔽 Bloque Cypress (usa tsconfig.cypress.json y reglas del plugin)
   {
-    files: ["cypress/**/*.ts", "cypress/**/*.tsx", "cypress.config.ts"],
+    files: ["cypress/**/*.{ts,tsx,d.ts}", "cypress.config.ts"],
     plugins: {
       cypress: cypressPlugin,
       "@typescript-eslint": typescriptEslint,
@@ -82,19 +73,28 @@ const eslintConfig = [
       parser: typescriptParser,
       parserOptions: {
         ecmaFeatures: { jsx: true },
-        project: "./tsconfig.cypress.json", // ⬅️ clave para el error de parsing
+        project: "./tsconfig.cypress.json",
       },
       globals: {
         ...globals.browser,
         ...globals.node,
         cy: "readonly",
-        Cypress: "readonly"
+        Cypress: "readonly",
       },
     },
     rules: {
       ...(cypressPlugin.configs.recommended?.rules ?? {}),
-      // Puedes añadir reglas TS específicas si quieres
     },
+  },
+  {
+    files: ["cypress/**/*.d.ts"],
+    languageOptions: {
+      parser: typescriptParser,
+      parserOptions: {
+        project: null,
+      },
+    },
+    rules: {},
   },
 
   prettierConfig,

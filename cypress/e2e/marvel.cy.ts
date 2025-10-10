@@ -1,17 +1,15 @@
-/// <reference types="cypress" />
+// <reference types="cypress" />
 
 describe("Flujo completo Marvel (buscar → detalle → favoritos → quitar)", () => {
   beforeEach(() => {
     cy.clearLocalStorage("favorites");
 
-    // ÚNICA intercept necesaria en cliente: la búsqueda por nombre
-    // Tu fetchCharacters espera { results: [...] }
     cy.intercept("GET", "**/api/marvel/characters**", (req) => {
       const url = new URL(req.url);
       const q = (url.searchParams.get("nameStartsWith") || "").toLowerCase();
 
       if (q === "adam warlock") {
-        req.reply({ fixture: "characters.adam-warlock.json" }); // { results: [ {…} ] }
+        req.reply({ fixture: "characters.adam-warlock.json" });
       } else {
         req.reply({ statusCode: 200, body: { results: [] } });
       }
@@ -21,53 +19,49 @@ describe("Flujo completo Marvel (buscar → detalle → favoritos → quitar)", 
   });
 
   it("permite buscar, ver detalle, añadir a favoritos, ver en favoritos y eliminar", () => {
-    // Grid visible
     cy.get("[data-cy=character-grid]", { timeout: 10000 }).should("be.visible");
 
-    // Buscar (con debounce 300ms)
-    cy.get("[data-cy=search-input]").clear().type("Adam Warlock");
+    cy.get("[data-cy=search-input]").clear();
+    cy.get("[data-cy=search-input]").type("Adam Warlock");
     cy.wait("@search");
 
-    // Asegura que aparece la card
-    cy.contains("[data-cy=character-card]", "Adam Warlock", { timeout: 10000 })
-      .scrollIntoView()
-      .should("be.visible");
+    cy.contains("[data-cy=character-card]", "Adam Warlock", { timeout: 10000 }).should("exist");
+    cy.contains("[data-cy=character-card]", "Adam Warlock").scrollIntoView();
+    cy.contains("[data-cy=character-card]", "Adam Warlock").should("be.visible");
 
-    // Entrar al detalle desde el link de la card
-    cy.contains("[data-cy=character-card]", "Adam Warlock").within(() => {
-      cy.get("a").first().click();
-    });
+    cy.intercept("GET", "**/character/*?_rsc=*").as("rscDetail");
 
-    // En Next App Router el detalle/cómics vienen del SSR (MOCK_API=1), no hay XHR que esperar.
-    cy.location("pathname", { timeout: 10000 }).should("match", /\/character\/\d+/);
+    cy.get('a[href="/character/1010354"]').first().click();
+
+    cy.wait("@rscDetail");
+
+    cy.location("pathname", { timeout: 10000 }).should("match", /\/character\/\d+$/);
     cy.get("h1", { timeout: 10000 }).should("contain.text", "Adam Warlock");
 
-    // Marcar favorito en el detalle
     cy.get("[data-cy=detail-favorite-button]").click();
 
-    // Ir a favoritos desde el header
+    cy.intercept("GET", "**/?favorites=1&_rsc=*").as("rscFav");
+
     cy.get("[data-cy=header-favorites-button]").click();
-    cy.url().should("include", "?favorites=1");
 
-    // Debe aparecer en la lista de favoritos
-    cy.contains("[data-cy=character-card]", "Adam Warlock")
-      .scrollIntoView()
-      .should("be.visible");
+    cy.wait("@rscFav");
+    cy.location("search", { timeout: 10000 }).should("include", "favorites=1");
 
-    // Quitar de favoritos desde la card
-    cy.contains("[data-cy=character-card]", "Adam Warlock").within(() => {
-      cy.get("[data-cy=favorite-toggle-button]").click();
-    });
+    cy.get('a[href="/character/1010354"]').as("adamLink");
+    cy.get("@adamLink").scrollIntoView();
+    cy.get("@adamLink").should("be.visible");
 
-    // Ya no aparece
-    cy.contains("[data-cy=character-card]", "Adam Warlock").should("not.exist");
+    cy.get('a[href="/character/1010354"]')
+      .parents('[data-cy="character-card"]')
+      .first()
+      .find('[data-cy="favorite-toggle-button"]')
+      .click();
 
-    // Contador en header = 0
+    cy.get('a[href="/character/1010354"]').should("not.exist");
     cy.get("[data-cy=header-favorites-button]").should("contain.text", "0");
 
-    // Volver a home
     cy.get("[data-cy=header-logo]").click();
-    cy.location("pathname").should("eq", "/");
+    cy.location("pathname", { timeout: 10000 }).should("eq", "/");
     cy.get("[data-cy=search-input]").should("be.visible");
   });
 });

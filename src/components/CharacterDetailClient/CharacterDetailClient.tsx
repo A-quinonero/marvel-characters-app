@@ -1,16 +1,20 @@
 "use client";
 
+import Image from "next/image";
 import React, { Suspense } from "react";
 import styled, { keyframes } from "styled-components";
+
+import ComicsListSkeleton from "../ComicsList/ComicsListSkeleton";
+
+import EmptyHeartIconDetailCharacter from "@/assets/icons/EmptyHeartIconDetailCharacter";
+import HeartIcon from "@/assets/icons/HeartIcon";
+import ComicsList from "@/components/ComicsList/ComicsList";
 import { useCharacterDetail } from "@/hooks/useCharacterDetail";
+import { marvelFullSize } from "@/lib/marvelImageLoader";
 import type { Character } from "@/types/characters";
 import type { Comic } from "@/types/comic";
-import ComicsList from "@/components/ComicsList/ComicsList";
-import HeartIcon from "@/assets/icons/HeartIcon";
-import EmptyHeartIconDetailCharacter from "@/assets/icons/EmptyHeartIconDetailCharacter";
-import ComicsListSkeleton from "../ComicsList/ComicsListSkeleton";
-import Image from "next/image";
-import { marvelFullSize } from "@/lib/marvelImageLoader";
+
+
 
 const fadeInFromAbove = keyframes`
   from { opacity: 0; transform: translateY(-20px); }

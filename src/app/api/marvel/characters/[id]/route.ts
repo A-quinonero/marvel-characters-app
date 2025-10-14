@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+
 import { mapCharacter, marvelFetch } from "@/app/api/marvel/_utils";
 import type { MarvelCharacterDTO } from "@/types/api";
 

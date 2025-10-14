@@ -6,7 +6,7 @@ import reactHooksPlugin from "eslint-plugin-react-hooks";
 import jsxA11yPlugin from "eslint-plugin-jsx-a11y";
 import prettierConfig from "eslint-config-prettier";
 import cypressPlugin from "eslint-plugin-cypress";
-
+import importPlugin from "eslint-plugin-import";
 const eslintConfig = [
   {
     ignores: ["node_modules/**", ".next/**", "out/**", "build/**", "next-env.d.ts"],
@@ -50,6 +50,7 @@ const eslintConfig = [
       "@next/next": nextPlugin,
       "react-hooks": reactHooksPlugin,
       "jsx-a11y": jsxA11yPlugin,
+      import: importPlugin,
     },
     rules: {
       ...nextPlugin.configs.recommended.rules,
@@ -58,6 +59,14 @@ const eslintConfig = [
       ...jsxA11yPlugin.configs.recommended.rules,
       "react-hooks/rules-of-hooks": "error",
       "react-hooks/exhaustive-deps": "warn",
+      "import/order": [
+        "error",
+        {
+          groups: ["builtin", "external", "internal", "parent", "sibling", "index"],
+          alphabetize: { order: "asc", caseInsensitive: true },
+          "newlines-between": "always",
+        },
+      ],
     },
     settings: {
       react: { version: "detect" },

@@ -1,9 +1,10 @@
 "use client";
 
 import { useMemo, useCallback } from "react";
+
+import { useFavorites } from "@/hooks/useFavorites";
 import type { Character } from "@/types/characters";
 import type { Comic } from "@/types/comic";
-import { useFavorites } from "@/hooks/useFavorites";
 
 export function useCharacterDetail(character: Character | null, comics?: Comic[]) {
   const { isFavorite, addFavorite, removeFavorite } = useFavorites();

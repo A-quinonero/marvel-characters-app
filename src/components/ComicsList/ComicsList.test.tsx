@@ -1,9 +1,10 @@
 // src/components/ComicsList/ComicsList.test.tsx
-import React from "react";
 import { render, screen } from "@testing-library/react";
+import React from "react";
 import "@testing-library/jest-dom";
 
 import ComicsList from "./ComicsList";
+
 import type { Comic } from "@/types/comic";
 
 // Mockeamos ComicItem para que pinte un <li> simple con el título.

@@ -1,5 +1,6 @@
 // src/components/CharacterCard/CharacterCard.test.tsx
 import { render, screen, fireEvent } from "@testing-library/react";
+
 import CharacterCard from "./CharacterCard";
 
 const mockUseFavorites = {

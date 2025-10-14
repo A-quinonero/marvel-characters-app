@@ -1,8 +1,9 @@
 import { Suspense } from "react";
+
 import { marvelFetch, mapCharacter } from "@/app/api/marvel/_utils";
-import { MarvelCharacterDTO } from "@/types/api";
-import HomeClient from "@/components/HomeClient/HomeClient";
 import CharacterCardSkeleton from "@/components/CharacterCard/CharacterCardSkeleton";
+import HomeClient from "@/components/HomeClient/HomeClient";
+import { MarvelCharacterDTO } from "@/types/api";
 
 function HomeFallback() {
   return (

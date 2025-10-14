@@ -1,13 +1,14 @@
 // src/components/CharacterCard/CharacterCard.tsx
 "use client";
 
+import Image from "next/image";
 import { memo, useCallback, useMemo } from "react";
 import styled from "styled-components";
-import Image from "next/image";
+
+import EmptyHeartIcon from "@/assets/icons/EmptyHeartIcon";
+import HeartIcon from "@/assets/icons/HeartIcon";
 import TransitionLink from "@/components/TransitionLink/TransitionLink";
 import { useFavorites } from "@/hooks/useFavorites";
-import HeartIcon from "@/assets/icons/HeartIcon";
-import EmptyHeartIcon from "@/assets/icons/EmptyHeartIcon";
 import { marvelSquareLoader } from "@/lib/marvelImageLoader";
 
 const ImgWrap = styled.div`

@@ -1,5 +1,6 @@
 // src/styles/variables.ts
 import { css } from "styled-components";
+
 import type { AppTheme } from "./theme";
 
 // Genera variables CSS a partir del tema

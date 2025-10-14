@@ -2,9 +2,10 @@
 "use client";
 
 import React, { createContext, useContext, useMemo, useReducer, useCallback, useRef } from "react";
+
+import { fetchCharacters } from "@/lib/api/marvel";
 import { charactersInitialState, charactersReducer } from "@/reducers/charactersReducer";
 import type { Character } from "@/types/characters";
-import { fetchCharacters } from "@/lib/api/marvel";
 
 type Ctx = {
   characters: Character[];

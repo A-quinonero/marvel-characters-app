@@ -1,8 +1,9 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useReducer } from "react";
-import { FavoriteCharacter, FavoritesState } from "@/types/favorites";
+
 import { favoritesInitialState, favoritesReducer } from "@/reducers/favoritesReducer";
+import { FavoriteCharacter, FavoritesState } from "@/types/favorites";
 
 type FavoritesContextValue = {
   state: FavoritesState;

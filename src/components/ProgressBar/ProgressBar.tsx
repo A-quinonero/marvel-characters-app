@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import styled, { keyframes, css } from "styled-components";
+
 import { useLoader } from "@/context/LoaderProvider";
 
 const loading = keyframes`

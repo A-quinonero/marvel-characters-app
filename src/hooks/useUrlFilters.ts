@@ -1,7 +1,8 @@
 "use client";
 
-import { useCallback, useTransition, useEffect } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useTransition, useEffect } from "react";
+
 import { useLoader } from "@/context/LoaderProvider";
 
 export function useUrlFilters() {

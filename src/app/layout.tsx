@@ -1,12 +1,14 @@
 // src/app/layout.tsx
 import type { Metadata } from "next";
-import StyledComponentsRegistry from "@/lib/StyledComponentsRegistry";
-import ClientProviders from "./providers";
-import Header from "@/components/Header/Header";
 import { Roboto_Condensed } from "next/font/google";
-import { LoaderProvider } from "@/context/LoaderProvider";
 import { Suspense } from "react";
+
+import ClientProviders from "./providers";
+
+import Header from "@/components/Header/Header";
 import { HeaderSpacer } from "@/components/Header/HeaderSpacer";
+import { LoaderProvider } from "@/context/LoaderProvider";
+import StyledComponentsRegistry from "@/lib/StyledComponentsRegistry";
 
 const robotoCondensed = Roboto_Condensed({
   subsets: ["latin"],

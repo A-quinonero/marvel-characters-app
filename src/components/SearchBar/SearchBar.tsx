@@ -1,7 +1,8 @@
 "use client";
 
-import SearchIcon from "@/assets/icons/SearchIcon";
 import styled from "styled-components";
+
+import SearchIcon from "@/assets/icons/SearchIcon";
 
 const Wrapper = styled.div`
   position: relative;

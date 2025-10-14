@@ -2,7 +2,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { render, screen } from "@testing-library/react";
+
 import ComicItem from "./ComicItem";
+
 import type { Comic } from "@/types/comic";
 
 jest.mock("@/lib/utils/formatters", () => ({

@@ -1,8 +1,9 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import Link, { type LinkProps } from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useTransition, type ReactNode } from "react";
+
 import { useLoader } from "@/context/LoaderProvider";
 
 type TransitionLinkProps = LinkProps & {

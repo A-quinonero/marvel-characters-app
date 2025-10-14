@@ -1,14 +1,17 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import styled from "styled-components";
 import { useCallback, useEffect, useState } from "react";
-import { useFavorites } from "@/hooks/useFavorites";
-import MarvelLogo from "@/assets/icons/MarvelLogo";
-import HeartIcon from "@/assets/icons/HeartIcon";
-import { useUrlFilters } from "@/hooks/useUrlFilters";
+import styled from "styled-components";
+
 import ProgressBar from "../ProgressBar/ProgressBar";
+
+import HeartIcon from "@/assets/icons/HeartIcon";
+import MarvelLogo from "@/assets/icons/MarvelLogo";
+import { useFavorites } from "@/hooks/useFavorites";
 import { useSearch } from "@/hooks/useSearch";
+import { useUrlFilters } from "@/hooks/useUrlFilters";
+
 
 // src/components/Header/Header.tsx
 const Bar = styled.header`

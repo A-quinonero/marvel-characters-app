@@ -1,9 +1,10 @@
 // src/hooks/useSearch.ts
 "use client";
 
-import { useMemo, useRef, useState, useCallback, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
 import debounce from "lodash.debounce";
+import { useSearchParams } from "next/navigation";
+import { useMemo, useRef, useState, useCallback, useEffect } from "react";
+
 import { useCharactersContext } from "@/context/CharactersProvider";
 import { useFavorites } from "@/hooks/useFavorites";
 import type { Character } from "@/types/characters";

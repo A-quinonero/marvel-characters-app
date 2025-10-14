@@ -1,6 +1,7 @@
 // src/context/LoaderProvider.test.tsx
-import React, { forwardRef, useImperativeHandle } from "react";
 import { render, screen, act } from "@testing-library/react";
+import React, { forwardRef, useImperativeHandle } from "react";
+
 import "@testing-library/jest-dom";
 import { LoaderProvider, useLoader } from "./LoaderProvider";
 

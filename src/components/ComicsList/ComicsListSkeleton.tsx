@@ -1,8 +1,10 @@
 "use client";
 
 import styled, { keyframes } from "styled-components";
-import { Grid } from "./ComicsList";
+
 import { Item } from "../ComicItem/ComicItem";
+
+import { Grid } from "./ComicsList";
 
 const shimmer = keyframes`
   0% { background-position: -200% 0; }

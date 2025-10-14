@@ -1,10 +1,11 @@
 "use client";
 
 import { ThemeProvider } from "styled-components";
-import theme from "@/styles/theme";
-import { GlobalStyle } from "@/styles/globalStyles";
+
 import { CharactersProvider } from "@/context/CharactersProvider";
 import { FavoritesProvider } from "@/context/FavoritesProvider";
+import { GlobalStyle } from "@/styles/globalStyles";
+import theme from "@/styles/theme";
 
 export default function ClientProviders({ children }: { children: React.ReactNode }) {
   return (

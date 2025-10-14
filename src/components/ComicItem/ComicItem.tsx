@@ -1,11 +1,12 @@
 "use client";
 
+import Image from "next/image";
 import { memo } from "react";
 import styled from "styled-components";
-import type { Comic } from "@/types/comic";
-import { formatOnSaleDate } from "@/lib/utils/formatters";
-import Image from "next/image";
+
 import { marvelPortraitLoader } from "@/lib/marvelImageLoader";
+import { formatOnSaleDate } from "@/lib/utils/formatters";
+import type { Comic } from "@/types/comic";
 
 const mobileBreakpoint = "768px";
 

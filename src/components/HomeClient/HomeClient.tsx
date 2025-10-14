@@ -1,13 +1,14 @@
 "use client";
 
-import styled from "styled-components";
-import SearchBar from "@/components/SearchBar/SearchBar";
-import CharacterCard from "@/components/CharacterCard/CharacterCard";
-import { useSearch } from "@/hooks/useSearch";
-import CharacterCardSkeleton from "@/components/CharacterCard/CharacterCardSkeleton";
 import { useEffect } from "react";
-import { Character } from "@/types/characters";
+import styled from "styled-components";
+
+import CharacterCard from "@/components/CharacterCard/CharacterCard";
+import CharacterCardSkeleton from "@/components/CharacterCard/CharacterCardSkeleton";
+import SearchBar from "@/components/SearchBar/SearchBar";
 import { useCharactersContext } from "@/context/CharactersProvider";
+import { useSearch } from "@/hooks/useSearch";
+import { Character } from "@/types/characters";
 
 const Main = styled.main`
   display: flex;

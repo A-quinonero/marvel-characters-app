@@ -1,4 +1,5 @@
 import { createGlobalStyle } from "styled-components";
+
 import { themeCssVars } from "./variables";
 
 export const GlobalStyle = createGlobalStyle`

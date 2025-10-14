@@ -1,10 +1,11 @@
 export const runtime = "nodejs";
 
 import { notFound } from "next/navigation";
-import CharacterDetailClient from "@/components/CharacterDetailClient/CharacterDetailClient";
-import type { MarvelCharacterDTO, MarvelComicDTO } from "@/types/api";
+
 import { mapCharacter, mapComic, marvelFetch } from "@/app/api/marvel/_utils";
+import CharacterDetailClient from "@/components/CharacterDetailClient/CharacterDetailClient";
 import { readFixture } from "@/lib/readFixture";
+import type { MarvelCharacterDTO, MarvelComicDTO } from "@/types/api";
 
 type PageProps = { params: Promise<{ id: string }> };
 

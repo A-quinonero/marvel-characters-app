@@ -7,19 +7,22 @@ Aplicación web para explorar personajes de Marvel: búsqueda, detalle, y gesti�
 ## ✨ Funcionalidad
 
 **Vista principal**
+
 - Listado inicial de 50 personajes (o resultados de búsqueda).
-- Buscador por nombre con *debounce* (300 ms) y deduplicación de términos.
+- Buscador por nombre con _debounce_ (300 ms) y deduplicación de términos.
 - Contador con número de resultados en tiempo real.
 - Marcado/Desmarcado de favoritos en cada card.
 - Filtro de “solo favoritos” desde el icono del header.
 - Persistencia de favoritos (LocalStorage).
 
 **Vista de detalle**
+
 - Imagen, nombre y descripción del personaje.
 - Toggle de favorito del propio personaje.
 - Listado de **hasta 20 cómics** ordenados por fecha de salida.
 
 **Navegación**
+
 - Logotipo → vuelve al listado (resetea filtros y búsqueda).
 - Icono de favoritos → alterna el filtro de favoritos.
 - Accesible (roles, `aria-label`, `aria-pressed`, focus visible, etc.).
@@ -28,11 +31,11 @@ Aplicación web para explorar personajes de Marvel: búsqueda, detalle, y gesti�
 
 ## 🏗️ Tecnologías y decisiones
 
-- **Next.js (App Router, SSR/RSC)**: 
-  - Detalle y cómics se obtienen en servidor para mejor *TTFB* y SEO.
-  - `revalidate` configurado en las peticiones para *stale-while-revalidate* simple.
+- **Next.js (App Router, SSR/RSC)**:
+  - Detalle y cómics se obtienen en servidor para mejor _TTFB_ y SEO.
+  - `revalidate` configurado en las peticiones para _stale-while-revalidate_ simple.
 - **TypeScript**: tipado estricto, DTOs y modelos de dominio mapeados.
-- **State**: 
+- **State**:
   - **Context API** (sin Redux ni librerías de estado).
   - `CharactersContext` (data + loading + query) y `FavoritesContext` (persistido en LocalStorage).
 - **UI**: **styled-components**, estilos propios (sin MUI/AntD).
@@ -40,7 +43,7 @@ Aplicación web para explorar personajes de Marvel: búsqueda, detalle, y gesti�
 - **Performance**:
   - **`next/image` con loader propio de Marvel**: servimos **la variante óptima** según el ancho real (`portrait_*` para cómics, `standard_*` para cards).
   - `sizes` y `loading="lazy"`; `decoding="async"` donde aplica.
-  - Búsqueda con *debounce* y dedup.
+  - Búsqueda con _debounce_ y dedup.
   - `memo`, `useCallback` y selects de contexto finos para evitar renders.
 - **Testing**:
   - **Unit/Component**: Jest + React Testing Library.
@@ -48,7 +51,7 @@ Aplicación web para explorar personajes de Marvel: búsqueda, detalle, y gesti�
   - **Fixtures**: respuestas deterministas; **SSR mockeado** en desarrollo para que el flujo sea 100% estable.
 - **Calidad**:
   - ESLint (TS typed rules, Next, React Hooks, a11y, Cypress) + Prettier.
-  - Config separada para Cypress (`tsconfig.cypress.json`) para evitar *parser errors*.
+  - Config separada para Cypress (`tsconfig.cypress.json`) para evitar _parser errors_.
   - Lint rule “unsafe-to-chain-command” aplicada en Cypress (encadenados seguros).
 
 ---
@@ -57,8 +60,8 @@ Aplicación web para explorar personajes de Marvel: búsqueda, detalle, y gesti�
 
 - **Auth** MD5: `ts + PRIVATE_KEY + PUBLIC_KEY` → `hash`.
 - **Imagenes Marvel**: la API entrega `{ path, extension }`. Construimos la URL final con **variant**:
-  - *Portrait* (50×75 … 300×450): `portrait_small|medium|xlarge|fantastic|uncanny|incredible`
-  - *Standard* cuadrado (65×65 … 250×250): `standard_small|medium|large|xlarge|fantastic|amazing`
+  - _Portrait_ (50×75 … 300×450): `portrait_small|medium|xlarge|fantastic|uncanny|incredible`
+  - _Standard_ cuadrado (65×65 … 250×250): `standard_small|medium|large|xlarge|fantastic|amazing`
 - **Loader personalizado** (`src/lib/marvelImageLoader.ts`):
   - Dado un `width`, elegimos el **variant Marvel** adecuado (sin pixelar, sin sobredimensionar).
   - Evita hardcodear variantes; el server renderiza la ruta óptima.
@@ -68,10 +71,12 @@ Aplicación web para explorar personajes de Marvel: búsqueda, detalle, y gesti�
 ## 🧪 Estrategia de tests
 
 **Unit / RTL**
+
 - Componentes (cards, detalle, listas), hooks (`useSearch`, `useCharacterDetail`…), utilidades (`readFixture`).
-- Mocks controlados de `next/navigation`, contextos y *debounce* para tests deterministas.
+- Mocks controlados de `next/navigation`, contextos y _debounce_ para tests deterministas.
 
 **E2E / Cypress**
+
 - **Intercept** único en cliente para búsqueda: `/api/marvel/characters?nameStartsWith=…`.
 - **SSR mockeado** (detalle y cómics) mediante `MOCK_API=1` → las páginas server leen fixtures desde `cypress/fixtures` con `readFixture.ts`.
 - Esperas **deterministas**:
@@ -133,10 +138,12 @@ MOCK_API=0
 ## 🚀 Puesta en marcha
 
 ### Requisitos
+
 - **Node 18+**
 - **npm** o **pnpm** (a tu elección)
 
 ### Instalar dependencias
+
 ```bash
 npm i
 # o
@@ -144,19 +151,23 @@ pnpm i
 ```
 
 ### Desarrollo
+
 ```bash
 npm run dev
 ```
+
 - App en `http://localhost:3000`
 - Consola limpia de warnings/errores (lint + a11y + React Hooks).
 
 ### Producción
+
 ```bash
 npm run build
 npm run start
 ```
 
 ### Tests unitarios
+
 ```bash
 npm test
 # o en watch:
@@ -164,12 +175,15 @@ npm run test:watch
 ```
 
 ### E2E (Cypress, **SSR mockeado**)
+
 Headless:
+
 ```bash
 npm run e2e
 ```
 
 Interactivo:
+
 ```bash
 npm run e2e:open
 ```
@@ -177,6 +191,7 @@ npm run e2e:open
 > El script e2e levanta `next dev` con `MOCK_API=1`, espera al puerto y lanza Cypress. La búsqueda se intercepta por Cypress; el detalle/comics se sirven desde fixtures en SSR.
 
 ### Lint & Format
+
 ```bash
 npm run lint      # comprueba
 npm run lint:fix  # corrige
@@ -188,37 +203,43 @@ npm run format    # prettier write
 ## 🔍 Detalles interesantes
 
 ### Búsqueda robusta (`useSearch`)
-- *Debounce* de 300 ms.
+
+- _Debounce_ de 300 ms.
 - Deduplicación por término **normalizado** (trim + lower).
 - Limpieza cancela timers.
 - En modo **Favoritos**, filtra localmente (no dispara red).
 - Etiqueta de contador siempre “Result(s)” (consistencia UI).
 
 ### Filtros y navegación
+
 - `favorites=1` en querystring para persistencia de filtro.
 - **Header**:
   - Click en logo: resetea filtros + limpia búsqueda (si ya estás en `/`).
   - Click en corazón: alterna filtro o navega a `/` con favoritos activos.
 
 ### SSR y estabilidad de test
+
 - **SSR**: `app/character/[id]/page.tsx` crea promesas en server y las pasa al cliente; el listado de cómics se resuelve con `Suspense`.
 - **Mocks SSR**: con `MOCK_API=1`, las rutas server leen JSON de `cypress/fixtures` vía `readFixture<T>()`. Sin tocar producción.
 - **E2E determinista**: sólo interceptamos **búsqueda** en cliente; lo demás llega estable desde SSR mockeado.
 
 ### Imágenes sin pixelar
+
 - `next/image` + **loader Marvel**:
-  - Detecta si la URL trae o no *variant*; genera la adecuada según `width`.
-  - *Portrait* para cómics; *Standard* (cuadrado) para cards.
+  - Detecta si la URL trae o no _variant_; genera la adecuada según `width`.
+  - _Portrait_ para cómics; _Standard_ (cuadrado) para cards.
   - Config de `next.config` con `remotePatterns` para `i.annihil.us` + `images.qualities` (Next 16).
 - `sizes` correctos para que el server elija el asset justo.
 
 ### Accesibilidad
+
 - Roles semánticos (`role="banner"`, headings correctos).
 - `aria-pressed` en toggles de favoritos.
 - `aria-label` descriptivas, `title`, gestión de focus y `:focus-visible`.
 - Texto alternativo en todas las imágenes.
 
 ### Limpieza de DOM en transiciones/overlays
+
 - Al desmontar nodos portaleados (progress/overlays), usamos eliminación **segura** (`el.isConnected && el.remove()`), evitando errores tipo `removeChild on Node`.
 
 ---
@@ -241,8 +262,8 @@ npm run format    # prettier write
 
     "lint": "eslint . --format pretty",
     "lint:fix": "eslint . --fix --format pretty",
-    "format": "prettier --write ."
-  }
+    "format": "prettier --write .",
+  },
 }
 ```
 
@@ -268,10 +289,10 @@ El **intercept** del E2E sólo afecta a `/api/marvel/characters?nameStartsWith=�
   - Typed rules (`parserOptions.project`) separando TS de app y TS de Cypress (`tsconfig.cypress.json`).
 - **Cypress lint**: evitamos `unsafe-to-chain-command` dividiendo las cadenas:
   ```ts
-  cy.contains('[data-cy=character-card]', 'Adam Warlock').as('adam');
-  cy.get('@adam').should('exist');
-  cy.get('@adam').scrollIntoView();
-  cy.get('@adam').should('be.visible');
+  cy.contains("[data-cy=character-card]", "Adam Warlock").as("adam");
+  cy.get("@adam").should("exist");
+  cy.get("@adam").scrollIntoView();
+  cy.get("@adam").should("be.visible");
   ```
 
 ---

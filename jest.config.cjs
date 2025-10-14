@@ -31,7 +31,7 @@ const customJestConfig = {
     "src/**/*.{js,jsx,ts,tsx}",
     "!src/**/*.d.ts",
     "!src/**/index.tsx",
-    "!src/app/**", 
+    "!src/app/**",
     "!src/**/*.stories.{js,jsx,ts,tsx}",
   ],
 
